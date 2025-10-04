@@ -7,8 +7,8 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Udemy Notes Generator',
-  description: 'Generate structured notes from your Udemy courses',
+  title: 'NoteSynth - AI-Powered Note Generation',
+  description: 'Generate structured notes from Udemy courses, YouTube videos, and uploaded files. AI-powered note generation for better learning.',
 };
 
 export default function RootLayout({
@@ -18,7 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} min-h-full flex flex-col bg-gray-50 dark:bg-gray-900 font-sans`}>
+      <body 
+        className={`${inter.className} min-h-full flex flex-col bg-gray-50 dark:bg-gray-900 font-sans`}
+        suppressHydrationWarning={true}
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 min-h-full flex flex-col">
           <Header />
           <main className="flex-1">{children}</main>

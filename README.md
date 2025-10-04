@@ -59,7 +59,7 @@ Once you've created the `.env.local` file, let's start the development server:
 npm run dev
 ```
 
-### Udemy Notes
+### 1. Udemy Notes
 
 The application should now be running! Here's how to use it:
 
@@ -90,6 +90,23 @@ The application will:
 - Show completion progress for each course
 - Generate well-structured markdown notes using Gemini AI
 - Organize notes by chapter and lecture in a ZIP file
+
+### 2. Youtube Notes
+
+**How It Works:**
+
+1. **User enters YouTube URL** (supports youtube.com/watch?v=, youtu.be/, etc.)
+2. **System extracts video ID** from the URL
+3. **Fetches video transcript** using the youtube-transcript library
+4. **Processes with Gemini AI** to create structured notes
+5. **Generates ZIP file** with markdown content
+6. **Automatically downloads** the notes file
+
+**Supported URL Formats:**
+- [https://www.youtube.com/watch?v=VIDEO_ID](https://www.youtube.com/watch?v=VIDEO_ID)
+- [https://youtu.be/VIDEO_ID](https://youtu.be/VIDEO_ID)
+- [https://youtube.com/embed/VIDEO_ID](https://youtube.com/embed/VIDEO_ID)
+- [https://youtube.com/v/VIDEO_ID](https://youtube.com/v/VIDEO_ID)
 
 ---
 
