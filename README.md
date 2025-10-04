@@ -1,3 +1,25 @@
+## 🧠 NoteSynth
+
+**NoteSynth** is an AI-powered tool that **automatically generates structured notes** from **videos, lectures, and audio content** — helping learners capture key insights effortlessly.
+
+Whether you’re watching a **Udemy course**, a **YouTube tutorial**, or uploading your own **video/audio file**, NoteSynth listens, understands, and synthesizes the content into concise, readable notes.
+
+### ✨ Features
+
+* 🎥 **Multi-source Input:** Supports Udemy, YouTube, and uploaded video/audio files
+* 🧩 **AI-Powered Summarization:** Extracts and organizes key points intelligently
+* 🗂️ **Clean, Structured Notes:** Converts long content into easy-to-review summaries
+* ⚡ **Fast & Accessible:** Built with Next.js for performance and scalability
+
+### 🚀 Why NoteSynth?
+
+Traditional note-taking from video lectures is slow and error-prone.
+**NoteSynth** automates the process — helping students, professionals, and lifelong learners **focus on understanding, not transcribing**.
+
+---
+
+## Live Site
+
 **🌐 Live Site:** [https://clever-liger-2e7c60.netlify.app/](https://clever-liger-2e7c60.netlify.app/)
 
 > ⚠️ **Note:** This Netlify deployment runs on a free tier with limited resources (4 GB RAM). As a result, downloading **multiple lectures at once** may cause the app to freeze.
@@ -14,6 +36,8 @@
 * To access Udemy course content, you'll need to provide your **Udemy cookies**
 
 ---
+
+## Usages
 
 To use the application:
 
@@ -34,6 +58,8 @@ Once you've created the `.env.local` file, let's start the development server:
 ```bash
 npm run dev
 ```
+
+### Udemy Notes
 
 The application should now be running! Here's how to use it:
 
