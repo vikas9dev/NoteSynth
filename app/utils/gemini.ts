@@ -1,10 +1,11 @@
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-if (!GEMINI_API_KEY) {
-  throw new Error('GEMINI_API_KEY environment variable is not set');
-}
-
 export async function generateStructuredNotes(vttContent: string, lectureTitle: string): Promise<string> {
+  // Check for API key at runtime, not at build time
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  
+  if (!GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY environment variable is not set');
+  }
+
   try {
     const prompt = `
 Rewrite the following lecture caption as a well-structured blog note section using Markdown format. Follow these guidelines:
