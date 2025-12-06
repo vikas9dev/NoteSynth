@@ -1,0 +1,62 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Debug & logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (we pass these at runtime)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE & Editor
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation & prompts (not needed in production)
+docs/
+scripts/
+README.md
+*.md
+!package.json
+
+# Git
+.git
+.gitignore
+
+# Testing
+coverage
+.nyc_output
+
+# Docker files (no need to copy these into image)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# TypeScript cache
+*.tsbuildinfo
+
+# ESLint cache
+.eslintcache
+
+# Vercel
+.vercel
+

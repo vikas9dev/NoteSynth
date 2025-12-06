@@ -3,9 +3,60 @@
 > ⚠️ **Note:** This Netlify deployment runs on a free tier with limited resources (4 GB RAM). As a result, downloading **multiple lectures at once** may cause the app to freeze.
 >
 > ✅ You can **download one lecture at a time** via the live site.
-> 🚀 To download **multiple lectures together**, it's recommended to **run the app locally**.
+> 🚀 To download **multiple lectures together**, it's recommended to **run the app locally** or use **Docker**.
 
 **In VS Code => Type CTRL + SHIFT + V to open the markdown file in preview format.**
+
+---
+
+## 🐳 Docker
+
+### Quick Start
+
+```bash
+docker run -p 3000:3000 -e GEMINI_API_KEY=your_api_key_here YOUR_DOCKERHUB_USERNAME/notesynth
+```
+
+Then open http://localhost:3000
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GEMINI_API_KEY` | ✅ Yes | Your Gemini API key. Get one free at [Google AI Studio](https://aistudio.google.com/apikey) |
+
+### Examples
+
+**Using inline environment variable:**
+```bash
+docker run -p 3000:3000 -e GEMINI_API_KEY=AIzaSy... YOUR_DOCKERHUB_USERNAME/notesynth
+```
+
+**Using an env file:**
+```bash
+# Create a file named .env with:
+# GEMINI_API_KEY=your_api_key_here
+
+docker run -p 3000:3000 --env-file .env YOUR_DOCKERHUB_USERNAME/notesynth
+```
+
+**Using Docker Compose:**
+```yaml
+services:
+  notesynth:
+    image: YOUR_DOCKERHUB_USERNAME/notesynth
+    ports:
+      - "3000:3000"
+    environment:
+      - GEMINI_API_KEY=your_api_key_here
+```
+
+Then run:
+```bash
+docker-compose up
+```
+
+---
 
 ### 🛠️ Local Setup Requirements:
 
