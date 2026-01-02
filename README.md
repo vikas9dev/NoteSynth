@@ -1,40 +1,9 @@
-<<<<<<< HEAD
-## 🧠 NoteSynth
-
-**NoteSynth** is an AI-powered tool that **automatically generates structured notes** from **videos, lectures, and audio content** — helping learners capture key insights effortlessly.
-
-Whether you’re watching a **Udemy course**, a **YouTube tutorial**, or uploading your own **video/audio file**, NoteSynth listens, understands, and synthesizes the content into concise, readable notes.
-
-### ✨ Features
-
-* 🎥 **Multi-source Input:** Supports Udemy, YouTube, and uploaded video/audio files
-* 🧩 **AI-Powered Summarization:** Extracts and organizes key points intelligently
-* 🗂️ **Clean, Structured Notes:** Converts long content into easy-to-review summaries
-* ⚡ **Fast & Accessible:** Built with Next.js for performance and scalability
-
-### 🚀 Why NoteSynth?
-
-Traditional note-taking from video lectures is slow and error-prone.
-**NoteSynth** automates the process — helping students, professionals, and lifelong learners **focus on understanding, not transcribing**.
-
----
-
-## Live Site
-
-**🌐 Live Site:** [https://clever-liger-2e7c60.netlify.app/](https://clever-liger-2e7c60.netlify.app/)
-=======
 # NoteSynth
->>>>>>> bf504aa33db7a1afc85cb388f6562d42ddc329c4
 
 Generate AI-powered markdown notes from Udemy course captions using Google's Gemini API. Transform lecture transcripts into well-structured, readable notes organized by chapters and lectures.
 
 ---
 
-<<<<<<< HEAD
-## Usages
-
-To use the application:
-=======
 ## 🌐 Live Site
 
 **[https://clever-liger-2e7c60.netlify.app/](https://clever-liger-2e7c60.netlify.app/)**
@@ -115,7 +84,6 @@ docker-compose up
 - Built with **[Next.js](https://nextjs.org)**
 
 #### Installation
->>>>>>> bf504aa33db7a1afc85cb388f6562d42ddc329c4
 
 ```bash
 npm install
@@ -139,58 +107,7 @@ Start the development server:
 npm run dev
 ```
 
-<<<<<<< HEAD
-### 1. Udemy Notes
-
-The application should now be running! Here's how to use it:
-
-1. Open your browser and go to [http://localhost:3000](http://localhost:3000)
-
-2. To get your Udemy cookie:
-   - Go to Udemy.com and log in
-   - Open Developer Tools (F12 or right-click > Inspect)
-   - Go to the Network tab
-   - Make any request (like clicking on a course)
-   - Find the request headers and copy the entire cookie value
-
-3. Application flow:
-   - Paste your Udemy cookie in the input field
-   - Click "Save & Load Courses" to fetch your courses
-   - Select a course from the grid
-   - Click "Select Lectures" to go to the curriculum page
-   - Select the chapters/lectures you want notes for
-   - Click "Generate Notes" to start the process
-   - Monitor the progress in the modal
-   - The ZIP file will download automatically when complete
-
-The application will:
-
-- Cache your cookie and courses in localStorage
-- Show a responsive grid of your courses
-- Allow searching and sorting courses
-- Show completion progress for each course
-- Generate well-structured markdown notes using Gemini AI
-- Organize notes by chapter and lecture in a ZIP file
-=======
 The application will be available at http://localhost:3000
->>>>>>> bf504aa33db7a1afc85cb388f6562d42ddc329c4
-
-### 2. Youtube Notes
-
-**How It Works:**
-
-1. **User enters YouTube URL** (supports youtube.com/watch?v=, youtu.be/, etc.)
-2. **System extracts video ID** from the URL
-3. **Fetches video transcript** using the youtube-transcript library
-4. **Processes with Gemini AI** to create structured notes
-5. **Generates ZIP file** with markdown content
-6. **Automatically downloads** the notes file
-
-**Supported URL Formats:**
-- [https://www.youtube.com/watch?v=VIDEO_ID](https://www.youtube.com/watch?v=VIDEO_ID)
-- [https://youtu.be/VIDEO_ID](https://youtu.be/VIDEO_ID)
-- [https://youtube.com/embed/VIDEO_ID](https://youtube.com/embed/VIDEO_ID)
-- [https://youtube.com/v/VIDEO_ID](https://youtube.com/v/VIDEO_ID)
 
 ---
 
