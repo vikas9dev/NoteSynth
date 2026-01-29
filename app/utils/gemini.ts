@@ -1,13 +1,35 @@
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Simple global lock to prevent multiple requests from overlapping too much
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 2000; // Reduced to 2s, we'll rely more on the provider's limits
+
 export async function generateStructuredNotes(vttContent: string, lectureTitle: string): Promise<string> {
-  // Check for API key at runtime, not at build time
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  
-  if (!GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY environment variable is not set');
+  const GROQ_API_KEY = process.env.GROQ_API_KEY;
+
+  if (!GEMINI_API_KEY && !GROQ_API_KEY) {
+    throw new Error('Neither GEMINI_API_KEY nor GROQ_API_KEY environment variable is set');
   }
 
-  try {
-    const prompt = `
+  // Use Groq if available, as it generally has much better rate limits for free tier
+  const provider = GROQ_API_KEY ? 'groq' : 'gemini';
+
+  const maxRetries = 3;
+  let retryCount = 0;
+  let backoffMs = 3000;
+
+  while (retryCount <= maxRetries) {
+    try {
+      // Respect the minimum request interval
+      const now = Date.now();
+      const timeSinceLastRequest = now - lastRequestTime;
+      if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+        await sleep(MIN_REQUEST_INTERVAL - timeSinceLastRequest);
+      }
+      lastRequestTime = Date.now();
+
+      const prompt = `
 Rewrite the following lecture caption as a well-structured blog note section using Markdown format. Follow these guidelines:
 
 - Remove all timestamps and speaker annotations.
@@ -24,7 +46,7 @@ Rewrite the following lecture caption as a well-structured blog note section usi
   - 📝 **Note:**
   - ⌨️ **Shortcut:**
 - Include short, simple code snippets in fenced blocks, if applicable.
-- Ensure proper Markdown formatting with real line breaks instead of escaped characters like \`\n\`.
+- Ensure proper Markdown formatting with real line breaks instead of escaped characters.
 - The final output must be a clean, well-formatted Markdown document ready to be written as a \`.md\` file.
 - Do not wrap the response in \`\`\`markdown or \`\`\`md.
 
@@ -32,61 +54,102 @@ Here is the lecture transcript:
 
 ${vttContent}
 `;
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.3,
-            topK: 40,
-            topP: 0.8,
-            maxOutputTokens: 2048,
+
+      let text = '';
+
+      if (provider === 'groq') {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${GROQ_API_KEY}`,
+            'Content-Type': 'application/json',
           },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are a helpful assistant that converts lecture transcripts into well-structured Markdown notes.'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+            temperature: 0.3,
+            max_tokens: 4096,
+          })
+        });
+
+        if (response.status === 429) {
+          throw new Error('Too Many Requests');
+        }
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`Groq API error: ${response.statusText} ${JSON.stringify(errorData)}`);
+        }
+
+        const data = await response.json();
+        text = data.choices?.[0]?.message?.content || '';
+      } else {
+        // Fallback to Gemini (using 1.5 Flash as it is more stable than 2.0 Experimental)
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ]
-        })
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: prompt
+                }]
+              }],
+              generationConfig: {
+                temperature: 0.3,
+                topK: 40,
+                topP: 0.8,
+                maxOutputTokens: 2048,
+              }
+            })
+          }
+        );
+
+        if (response.status === 429) {
+          throw new Error('Too Many Requests');
+        }
+
+        if (!response.ok) {
+          throw new Error(`Gemini API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.statusText}`);
+      if (!text) {
+        throw new Error('No content generated by AI API');
+      }
+
+      return text;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+
+      if (retryCount < maxRetries && (errorMessage.includes('Too Many Requests') || errorMessage.includes('429'))) {
+        console.warn(`${provider === 'groq' ? 'Groq' : 'Gemini'} API rate limited. Retrying in ${backoffMs}ms... (Attempt ${retryCount + 1}/${maxRetries})`);
+        await sleep(backoffMs);
+        retryCount++;
+        backoffMs *= 2;
+        continue;
+      }
+
+      console.error(`Error generating structured notes with ${provider}:`, error);
+      // Return the original content as fallback
+      return `# ${lectureTitle}\n\n${vttContent}`;
     }
-
-    const data = await response.json();
-
-    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      throw new Error('No content generated by Gemini API');
-    }
-
-    return data.candidates[0].content.parts[0].text;
-  } catch (error) {
-    console.error('Error generating structured notes:', error);
-    // Return the original content as fallback
-    return `# ${lectureTitle}\n\n${vttContent}`;
   }
-} 
+
+  return `# ${lectureTitle}\n\n${vttContent}`;
+}

@@ -39,7 +39,7 @@ export async function getCourseInfo(courseId: string, cookie: string): Promise<C
 
     const data = await response.json();
     const results = data.results || [];
-    
+
     // Process the curriculum items to organize chapters and lectures
     let currentChapter: { title: string; objectIndex: number; lectures: { id: string; title: string; objectIndex: number }[] } | null = null;
     const chapters: CourseInfo['chapters'] = [];
@@ -72,13 +72,14 @@ export async function getCourseInfo(courseId: string, cookie: string): Promise<C
 }
 
 export async function getLectureInfo(
-  courseId: string, 
-  lectureId: string, 
-  cookie: string
+  courseId: string,
+  lectureId: string,
+  cookie: string,
+  preFetchedCourseInfo?: CourseInfo
 ): Promise<LectureInfo | null> {
   try {
-    // Get the course structure first to get chapter info
-    const courseInfo = await getCourseInfo(courseId, cookie);
+    // Use pre-fetched course info if available, otherwise fetch it
+    const courseInfo = preFetchedCourseInfo || await getCourseInfo(courseId, cookie);
     if (!courseInfo) {
       throw new Error('Failed to fetch course structure');
     }
@@ -118,12 +119,12 @@ export async function getLectureInfo(
     }
 
     const data = await response.json();
-    
+
     // Get English captions if available
     let content = '';
     if (data.asset?.captions?.length > 0) {
       // Find the English caption - it should be a complete object with url
-      const englishCaption = data.asset.captions.find((c: unknown) => 
+      const englishCaption = data.asset.captions.find((c: unknown) =>
         typeof c === 'object' && c !== null && 'locale_id' in c && 'url' in c && 'status' in c &&
         c.locale_id === 'en_US' && c.url && c.status === 1
       );
@@ -135,7 +136,7 @@ export async function getLectureInfo(
           throw new Error(`Failed to fetch caption file: ${captionResponse.statusText}`);
         }
         const vttContent = await captionResponse.text();
-        
+
         // Convert VTT content to markdown and generate structured notes
         const markdownContent = convertVttToMarkdown(vttContent);
         content = await generateStructuredNotes(markdownContent, lectureInfo.title);
@@ -175,7 +176,7 @@ function convertVttToMarkdown(vttContent: string): string {
   // Process each caption
   for (; i < lines.length; i++) {
     const line = lines[i].trim();
-    
+
     // Skip timestamp lines and empty lines
     if (line.includes('-->') || line === '') {
       if (currentText) {

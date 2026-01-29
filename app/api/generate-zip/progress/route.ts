@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const courseId = searchParams.get('courseId');
   const lectureIds = searchParams.get('lectureIds')?.split(',');
-  
+
   // Get cookie from header
   const headerCookie = request.headers.get('X-Udemy-Cookie');
   if (!courseId || !lectureIds?.length || !headerCookie) {
@@ -54,7 +54,7 @@ export async function GET(request: Request) {
         const lectureId = lectureIds[i];
         try {
           // Get lecture info
-          const lectureInfo = await getLectureInfo(courseId, lectureId, headerCookie);
+          const lectureInfo = await getLectureInfo(courseId, lectureId, headerCookie, courseInfo);
           if (!lectureInfo) {
             throw new Error(`Failed to process lecture ${lectureId}`);
           }

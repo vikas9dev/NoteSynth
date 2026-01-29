@@ -20,24 +20,24 @@ export async function generateZipFile(
     }
 
     // Create a map to organize lectures by chapter
-    const lecturesByChapter = new Map<string, Array<{ 
-      id: string; 
-      title: string; 
+    const lecturesByChapter = new Map<string, Array<{
+      id: string;
+      title: string;
       content: string;
       objectIndex: number;
     }>>();
 
     // Process each lecture
     for (const lectureId of lectureIds) {
-      const lectureInfo = await getLectureInfo(courseId, lectureId, cookie);
+      const lectureInfo = await getLectureInfo(courseId, lectureId, cookie, courseInfo);
       if (!lectureInfo) continue;
 
       const { chapterTitle, lectureTitle, content, objectIndex } = lectureInfo;
-      
+
       if (!lecturesByChapter.has(chapterTitle)) {
         lecturesByChapter.set(chapterTitle, []);
       }
-      
+
       lecturesByChapter.get(chapterTitle)?.push({
         id: lectureId,
         title: lectureTitle,

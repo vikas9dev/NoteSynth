@@ -1,5 +1,6 @@
 import { getCourseInfo, getLectureInfo } from '../../../utils/udemy';
 import JSZip from 'jszip';
+import pLimit from 'p-limit';
 
 export async function POST(request: Request) {
   try {
@@ -34,19 +35,32 @@ export async function POST(request: Request) {
       objectIndex: number;
     }>>();
 
-    // Process each lecture
-    for (const lectureId of lectureIds) {
-      const lectureInfo = await getLectureInfo(courseId, lectureId, cookie);
-      if (!lectureInfo) continue;
+    // Process lectures in parallel with a limit to avoid hitting Gemini rate limits too hard
+    const limit = pLimit(5);
+    const lecturePromises = lectureIds.map((lectureId: string) =>
+      limit(async () => {
+        const lectureInfo = await getLectureInfo(courseId, lectureId, cookie, courseInfo);
+        if (lectureInfo) {
+          const { chapterTitle, lectureTitle, content, objectIndex } = lectureInfo;
+          return { chapterTitle, lectureTitle, content, objectIndex, id: lectureId };
+        }
+        return null;
+      })
+    );
 
-      const { chapterTitle, lectureTitle, content, objectIndex } = lectureInfo;
-      
+    const processedLectures = await Promise.all(lecturePromises);
+
+    for (const lecture of processedLectures) {
+      if (!lecture) continue;
+
+      const { chapterTitle, lectureTitle, content, objectIndex, id } = lecture;
+
       if (!lecturesByChapter.has(chapterTitle)) {
         lecturesByChapter.set(chapterTitle, []);
       }
-      
+
       lecturesByChapter.get(chapterTitle)?.push({
-        id: lectureId,
+        id,
         title: lectureTitle,
         content,
         objectIndex
