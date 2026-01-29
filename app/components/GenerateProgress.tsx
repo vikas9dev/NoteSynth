@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Progress } from '../types/progress';
+import { CheckCircleIcon, XCircleIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 interface GenerateProgressProps {
   courseId: string;
@@ -55,8 +56,8 @@ export default function GenerateProgress({ courseId, lectureIds, onClose, isGene
             'Content-Type': 'application/json',
             'X-Udemy-Cookie': cookie || ''
           },
-          body: JSON.stringify({ 
-            courseId, 
+          body: JSON.stringify({
+            courseId,
             lectureIds: lectureIds.map(id => id.toString())
           }),
         });
@@ -173,44 +174,100 @@ export default function GenerateProgress({ courseId, lectureIds, onClose, isGene
   }
 
   return (
-    <div className="inset-0 bg-black/50 z-50 flex items-center justify-center">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 w-full max-w-md">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          {progress.status === 'completed' && zipStatus === 'downloaded'
-            ? 'Success!'
-            : `Generating Notes... ${progress.progress}%`}
-        </h3>
-        <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-3 mb-4">
-          <div
-            className={`bg-indigo-600 h-3 rounded-full transition-all duration-300`}
-            style={{ width: `${progress.progress}%` }}
-          />
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 scale-in">
+      <div className="glass-card rounded-2xl p-8 w-full max-w-md shadow-2xl">
+        {/* Header */}
+        <div className="text-center mb-6">
+          {progress.status === 'completed' && zipStatus === 'downloaded' ? (
+            <>
+              <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4 animate-bounce" />
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Success!
+              </h3>
+            </>
+          ) : progress.status === 'error' ? (
+            <>
+              <XCircleIcon className="h-16 w-16 text-red-500 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Error
+              </h3>
+            </>
+          ) : (
+            <>
+              <div className="relative w-16 h-16 mx-auto mb-4">
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 opacity-20 animate-ping"></div>
+                <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xl">
+                  {progress.progress}%
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Generating Notes
+              </h3>
+            </>
+          )}
         </div>
-        {/* Secondary message for ZIP status */}
-        {zipStatus === 'generating' && (
-          <p className="text-sm text-blue-700 dark:text-blue-300 mb-2 font-semibold">Generating ZIP file...</p>
+
+        {/* Progress Bar */}
+        {progress.status !== 'error' && (
+          <div className="mb-6">
+            <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+              <div
+                className="h-3 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 transition-all duration-500 ease-out relative overflow-hidden"
+                style={{ width: `${progress.progress}%` }}
+              >
+                {/* Shimmer effect */}
+                <div className="absolute inset-0 shimmer"></div>
+              </div>
+            </div>
+            <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-2 font-medium">
+              {progress.progress}% Complete
+            </p>
+          </div>
         )}
-        {zipStatus === 'downloaded' && (
-          <p className="text-sm text-green-700 dark:text-green-300 mb-2 font-semibold">File downloaded.</p>
+
+        {/* Status Messages */}
+        <div className="space-y-3 mb-6">
+          {zipStatus === 'generating' && (
+            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold">
+              <ArrowDownTrayIcon className="h-5 w-5 animate-bounce" />
+              <p>Generating ZIP file...</p>
+            </div>
+          )}
+          {zipStatus === 'downloaded' && (
+            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold">
+              <CheckCircleIcon className="h-5 w-5" />
+              <p>File downloaded successfully!</p>
+            </div>
+          )}
+          {zipStatus === 'idle' && progress.status !== 'error' && (
+            <p className="text-gray-700 dark:text-gray-300">{progress.message}</p>
+          )}
+          {progress.status === 'error' && (
+            <p className="text-red-600 dark:text-red-400">{progress.message}</p>
+          )}
+        </div>
+
+        {/* Details */}
+        {(progress.chapter || progress.lecture) && progress.status !== 'error' && (
+          <div className="bg-indigo-50 dark:bg-slate-800/50 rounded-lg p-4 space-y-2 mb-6">
+            {progress.chapter && (
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="font-semibold">Chapter:</span> {progress.chapter}
+              </p>
+            )}
+            {progress.lecture && (
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                <span className="font-semibold">Lecture:</span> {progress.lecture}
+              </p>
+            )}
+          </div>
         )}
-        {/* Progress message and details */}
-        {zipStatus === 'idle' && (
-          <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">{progress.message}</p>
-        )}
-        {progress.chapter && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Chapter: {progress.chapter}
-          </p>
-        )}
-        {progress.lecture && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Lecture: {progress.lecture}
-          </p>
-        )}
+
+        {/* Close Button */}
         {(progress.status === 'error' || zipStatus === 'downloaded') && (
           <button
             onClick={onClose}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors mt-4"
+            className="w-full btn-gradient"
           >
             Close
           </button>
@@ -218,4 +275,5 @@ export default function GenerateProgress({ courseId, lectureIds, onClose, isGene
       </div>
     </div>
   );
-} 
+}
+
