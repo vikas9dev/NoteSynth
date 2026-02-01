@@ -31,8 +31,8 @@ export default function Header() {
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md'
-          : 'bg-transparent'
+        ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-md'
+        : 'bg-transparent'
         }`}
     >
       <div className="flex justify-between items-center py-4">
@@ -57,6 +57,13 @@ export default function Header() {
             className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 relative group"
           >
             My Courses
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+          </Link>
+          <Link
+            href="/blog"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 relative group"
+          >
+            Blog
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
           </Link>
 
@@ -105,6 +112,13 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               My Courses
+            </Link>
+            <Link
+              href="/blog"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 px-2 py-1"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Blog
             </Link>
 
             {/* Dark Mode Toggle for Mobile */}

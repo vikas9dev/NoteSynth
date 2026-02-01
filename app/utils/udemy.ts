@@ -1,4 +1,4 @@
-import { generateStructuredNotes } from './gemini';
+import { generateStructuredNotes } from './llmService';
 
 export interface LectureInfo {
   chapterTitle: string;

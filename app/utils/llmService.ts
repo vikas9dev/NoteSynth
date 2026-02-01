@@ -1,22 +1,74 @@
+import pLimit from 'p-limit';
+
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Simple global lock to prevent multiple requests from overlapping too much
-let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 4000; // 4 seconds between any two AI requests
+// Per-provider rate limiters for better parallelism
+// Groq: 30 RPM free tier, so ~2 seconds between requests (being conservative)
+// Gemini: 60 RPM free tier, so ~1 second between requests
+const providerState = {
+  groq: {
+    lastRequestTime: 0,
+    minInterval: 2000,  // 2 seconds between Groq requests
+    concurrencyLimit: pLimit(3), // Allow 3 concurrent Groq requests
+  },
+  gemini: {
+    lastRequestTime: 0,
+    minInterval: 1000,  // 1 second between Gemini requests
+    concurrencyLimit: pLimit(5), // Allow 5 concurrent Gemini requests
+  }
+};
 
-async function callProvider(
+// Mutex-like lock for coordinating request timing per provider
+const providerLocks: { [key: string]: Promise<void> } = {
+  groq: Promise.resolve(),
+  gemini: Promise.resolve(),
+};
+
+async function waitForProviderSlot(provider: 'groq' | 'gemini'): Promise<void> {
+  const state = providerState[provider];
+
+  // Chain onto the existing lock to ensure sequential timing checks
+  const currentLock = providerLocks[provider];
+  let releaseLock: () => void;
+
+  providerLocks[provider] = new Promise((resolve) => {
+    releaseLock = resolve;
+  });
+
+  await currentLock;
+
+  const now = Date.now();
+  const timeSinceLastRequest = now - state.lastRequestTime;
+
+  if (timeSinceLastRequest < state.minInterval) {
+    await sleep(state.minInterval - timeSinceLastRequest);
+  }
+
+  state.lastRequestTime = Date.now();
+  releaseLock!();
+}
+
+async function callProviderWithRateLimit(
   provider: 'groq' | 'gemini',
   prompt: string,
   keys: { gemini?: string; groq?: string }
 ): Promise<string> {
-  // Respect the minimum request interval globally
-  const now = Date.now();
-  const timeSinceLastRequest = now - lastRequestTime;
-  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
-    await sleep(MIN_REQUEST_INTERVAL - timeSinceLastRequest);
-  }
-  lastRequestTime = Date.now();
+  const state = providerState[provider];
 
+  // Use concurrency limiter to control parallel requests
+  return state.concurrencyLimit(async () => {
+    // Wait for rate limit slot
+    await waitForProviderSlot(provider);
+
+    return callProviderInternal(provider, prompt, keys);
+  });
+}
+
+async function callProviderInternal(
+  provider: 'groq' | 'gemini',
+  prompt: string,
+  keys: { gemini?: string; groq?: string }
+): Promise<string> {
   if (provider === 'groq') {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -87,46 +139,30 @@ export async function generateStructuredNotes(vttContent: string, lectureTitle: 
     throw new Error('Neither GEMINI_API_KEY nor GROQ_API_KEY environment variable is set');
   }
 
-  const prompt = `
-Rewrite the following lecture caption as a well-structured blog note section using Markdown format. Follow these guidelines:
+  // Load prompt template from external file
+  const fs = await import('fs/promises');
+  const path = await import('path');
+  const promptPath = path.join(process.cwd(), 'app/prompts/noteGeneration.txt');
+  const promptTemplate = await fs.readFile(promptPath, 'utf-8');
+  const prompt = promptTemplate.replace('{{TRANSCRIPT}}', vttContent);
 
-- Remove all timestamps and speaker annotations.
-- Keep all original information intact—do not skip or omit any important details.
-- Rephrase content to improve clarity, flow, and readability.
-- Use a \`##\` heading that exactly matches the lecture title.
-- Break long paragraphs into shorter ones for easier review.
-- Use bullet points and numbered lists where appropriate.
-- Add relevant emojis to highlight key ideas or steps.
-- Automatically detect and style the following keywords consistently with bold and emojis:
-  - 💡 **Tip:**
-  - ⚠️ **Warning:**
-  - 📌 **Example:**
-  - 📝 **Note:**
-  - ⌨&H00FE; **Shortcut:**
-- Include short, simple code snippets in fenced blocks, if applicable.
-- Ensure proper Markdown formatting with real line breaks instead of escaped characters.
-- The final output must be a clean, well-formatted Markdown document ready to be written as a \`.md\` file.
-- Do not wrap the response in \`\`\`markdown or \`\`\`md.
-
-Here is the lecture transcript:
-
-${vttContent}
-`;
-
-  // Strategy: Try Groq first, if it fails after all retries, try Gemini as fallback
-  let providersToTry: ('groq' | 'gemini')[] = [];
+  // Strategy: Try Groq first (faster), fall back to Gemini
+  const providersToTry: ('groq' | 'gemini')[] = [];
   if (GROQ_API_KEY) providersToTry.push('groq');
   if (GEMINI_API_KEY) providersToTry.push('gemini');
 
   for (const provider of providersToTry) {
-    const maxRetries = 5;
+    const maxRetries = 3; // Reduced retries since we have better rate limiting
     let retryCount = 0;
-    let backoffMs = 8000; // Increased base backoff
+    let backoffMs = 4000; // Reduced base backoff
 
     while (retryCount <= maxRetries) {
       try {
-        const text = await callProvider(provider, prompt, { gemini: GEMINI_API_KEY, groq: GROQ_API_KEY });
-        if (text) return text;
+        const text = await callProviderWithRateLimit(provider, prompt, { gemini: GEMINI_API_KEY, groq: GROQ_API_KEY });
+        if (text) {
+          console.log(`✓ Generated notes using ${provider.toUpperCase()}`);
+          return text;
+        }
         throw new Error('No content generated');
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -135,7 +171,7 @@ ${vttContent}
             console.warn(`${provider.toUpperCase()} rate limited. Retrying in ${backoffMs}ms... (Attempt ${retryCount + 1}/${maxRetries})`);
             await sleep(backoffMs);
             retryCount++;
-            backoffMs *= 2;
+            backoffMs *= 1.5; // Gentler backoff
             continue;
           }
           console.error(`${provider.toUpperCase()} failed after ${maxRetries} retries. Trying next provider if available...`);
@@ -149,4 +185,15 @@ ${vttContent}
   }
 
   return `# ${lectureTitle}\n\n${vttContent}`;
+}
+
+// Export concurrency limit for use in download route
+export function getProviderConcurrencyLimit(): number {
+  const GROQ_API_KEY = process.env.GROQ_API_KEY;
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+  // Return the concurrency limit of the primary provider
+  if (GROQ_API_KEY) return 3;
+  if (GEMINI_API_KEY) return 5;
+  return 1;
 }

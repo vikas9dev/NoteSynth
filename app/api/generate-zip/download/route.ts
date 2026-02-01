@@ -1,4 +1,5 @@
 import { getCourseInfo, getLectureInfo } from '../../../utils/udemy';
+import { getProviderConcurrencyLimit } from '../../../utils/llmService';
 import JSZip from 'jszip';
 import pLimit from 'p-limit';
 
@@ -35,8 +36,10 @@ export async function POST(request: Request) {
       objectIndex: number;
     }>>();
 
-    // Process lectures in parallel with a limit to avoid hitting Gemini rate limits too hard
-    const limit = pLimit(5);
+    // Use dynamic concurrency based on provider - the llmService handles rate limiting internally
+    const concurrencyLimit = getProviderConcurrencyLimit();
+    console.log(`Processing ${lectureIds.length} lectures with concurrency limit: ${concurrencyLimit}`);
+    const limit = pLimit(concurrencyLimit);
     const lecturePromises = lectureIds.map((lectureId: string) =>
       limit(async () => {
         const lectureInfo = await getLectureInfo(courseId, lectureId, cookie, courseInfo);
