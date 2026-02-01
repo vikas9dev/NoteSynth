@@ -16,6 +16,7 @@ This guide covers how to build, test, and publish the NoteSynth Docker image.
 
 We use **[release-please](https://github.com/googleapis/release-please)** for automated versioning and **GitHub Actions** for Docker builds.
 
+
 ### How It Works
 
 1. **Push commits to main** using [Conventional Commits](https://www.conventionalcommits.org/):

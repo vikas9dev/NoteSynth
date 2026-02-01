@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftIcon, ClockIcon, CalendarIcon, SparklesIcon, FolderIcon, ShieldCheckIcon, PlayIcon, RocketLaunchIcon, LightBulbIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ClockIcon, CalendarIcon, SparklesIcon, PlayIcon, RocketLaunchIcon, LightBulbIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 export default function WhatIsNoteSynth() {
     return (
@@ -40,8 +40,8 @@ export default function WhatIsNoteSynth() {
                 {/* Hero Section */}
                 <div className="glass-card rounded-2xl p-8 mb-8">
                     <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
-                        Have you ever watched a Udemy course, only to realize later that you can't remember half of what was covered?
-                        You're not alone. Studies show that we forget up to <strong className="text-indigo-600 dark:text-indigo-400">70% of new information within 24 hours</strong> without proper note-taking.
+                        Have you ever watched a Udemy course, only to realize later that you can&apos;t remember half of what was covered?
+                        You&apos;re not alone. Studies show that we forget up to <strong className="text-indigo-600 dark:text-indigo-400">70% of new information within 24 hours</strong> without proper note-taking.
                     </p>
                     <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mt-4">
                         <strong className="text-gray-900 dark:text-white">NoteSynth</strong> is a free, open-source tool that solves this problem by automatically
@@ -97,7 +97,7 @@ export default function WhatIsNoteSynth() {
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">AI-Powered Note Generation</h3>
                             </div>
                             <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-                                Using advanced language models (Groq and Google Gemini), NoteSynth doesn't just copy the captions—it intelligently restructures them:
+                                Using advanced language models (Groq and Google Gemini), NoteSynth doesn&apos;t just copy the captions—it intelligently restructures them:
                             </p>
                             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                                 <li>✅ Clear headings and subheadings</li>
@@ -134,7 +134,7 @@ export default function WhatIsNoteSynth() {
                             </div>
                             <p className="text-gray-600 dark:text-gray-300 text-sm">
                                 Your Udemy cookie is stored only in your browser—never on our servers.
-                                We don't have access to your account or course data.
+                                We don&apos;t have access to your account or course data.
                             </p>
                         </div>
 
@@ -145,7 +145,7 @@ export default function WhatIsNoteSynth() {
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Try Before You Commit</h3>
                             </div>
                             <p className="text-gray-600 dark:text-gray-300 text-sm">
-                                Not sure if it's for you? Try our <strong>Demo Mode</strong> to explore the interface
+                                Not sure if it&apos;s for you? Try our <strong>Demo Mode</strong> to explore the interface
                                 with sample courses—no login required!
                             </p>
                         </div>

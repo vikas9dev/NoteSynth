@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { GenerationSession, LectureProgress } from '../types/progress';
+import React from 'react';
+import { GenerationSession } from '../types/progress';
 import { ChevronDownIcon, ChevronRightIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ProgressTableProps {

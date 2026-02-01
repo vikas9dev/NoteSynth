@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftIcon, ClockIcon, CalendarIcon, AdjustmentsHorizontalIcon, CommandLineIcon, DocumentDuplicateIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ClockIcon, CalendarIcon, AdjustmentsHorizontalIcon, CommandLineIcon, DocumentDuplicateIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 export default function NewFeaturesCustomization() {
     return (
@@ -41,7 +41,7 @@ export default function NewFeaturesCustomization() {
                 <div className="glass-card rounded-2xl p-8 mb-12">
                     <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                         We heard you! While automatic note generation is great, sometimes you need more control.
-                        Today, we're excited to announce fully customizable settings that put you in the driver's seat.
+                        Today, we&apos;re excited to announce fully customizable settings that put you in the driver&apos;s seat.
                     </p>
                 </div>
 
@@ -56,7 +56,7 @@ export default function NewFeaturesCustomization() {
 
                     <div className="glass-card rounded-2xl p-6">
                         <p className="text-gray-600 dark:text-gray-300 mb-6">
-                            You can now modify the exact instructions sent to the AI. Want more code examples? Need summaries in a specific language? prefer bullet points over paragraphs? It's all up to you.
+                            You can now modify the exact instructions sent to the AI. Want more code examples? Need summaries in a specific language? prefer bullet points over paragraphs? It&apos;s all up to you.
                         </p>
 
                         <div className="bg-gray-900 rounded-xl p-6 overflow-hidden relative">
