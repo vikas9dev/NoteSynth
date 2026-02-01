@@ -105,7 +105,7 @@ export async function POST(request: Request) {
           const lecture = lectures[i];
           // Ensure lecture title is H2 for TOC links to work correctly
           // We assume LLM output might already have H2 or similar, but we enforce it for consistency
-          let content = lecture.content;
+          const content = lecture.content;
 
           // If content doesn't start with H2, we could prepend it, but LLM usually does ## Title
           // For safety, we can wrap/ensure headers

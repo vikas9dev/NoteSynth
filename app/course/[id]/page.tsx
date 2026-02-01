@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { use } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { CurriculumItem } from '../../types/udemy';
 import GenerateProgress from '../../components/GenerateProgress';
 import { ChevronDownIcon, ChevronRightIcon, CheckIcon, LockClosedIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -260,7 +261,7 @@ export default function CoursePage({ params }: PageProps) {
             <div className="flex-1">
               <p className="font-semibold text-amber-700 dark:text-amber-400">Demo Mode</p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                You&apos;re viewing demo content. <a href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Enter your Udemy cookie</a> to access your courses.
+                You&apos;re viewing demo content. <Link href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">Enter your Udemy cookie</Link> to access your courses.
               </p>
             </div>
           </div>
@@ -521,12 +522,12 @@ export default function CoursePage({ params }: PageProps) {
                 >
                   Close
                 </button>
-                <a
+                <Link
                   href="/"
                   className="flex-1 btn-gradient py-3 px-6 rounded-xl text-center font-medium"
                 >
                   Enter Cookie
-                </a>
+                </Link>
               </div>
             </div>
           </div>

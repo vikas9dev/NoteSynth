@@ -62,22 +62,8 @@ export function sanitizePrompt(prompt: string): { sanitized: string; error?: str
         };
     }
 
-    // Escape HTML entities to prevent XSS
-    const escapeHtml = (str: string): string => {
-        const htmlEntities: Record<string, string> = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#x27;',
-        };
-        // Only escape in contexts that could be interpreted as HTML
-        // We preserve backticks and markdown syntax
-        return str.replace(/[&<>"']/g, (char) => htmlEntities[char] || char);
-    };
-
     // Remove potential script tags and event handlers
-    let sanitized = prompt
+    const sanitized = prompt
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
         .replace(/on\w+\s*=/gi, '')
         .replace(/javascript:/gi, '');
@@ -125,7 +111,7 @@ export function saveSettings(settings: NoteSynthSettings): { success: boolean; e
     }
 
     // Sanitize prompt before saving
-    const { sanitized, error } = sanitizePrompt(settings.customPrompt);
+    const { error } = sanitizePrompt(settings.customPrompt);
     if (error) {
         return { success: false, error };
     }
@@ -138,7 +124,7 @@ export function saveSettings(settings: NoteSynthSettings): { success: boolean; e
 
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(toSave));
         return { success: true };
-    } catch (e) {
+    } catch {
         return { success: false, error: 'Failed to save settings to localStorage' };
     }
 }

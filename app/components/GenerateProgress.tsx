@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Progress, GenerationSession, LectureProgress } from '../types/progress';
-import { CheckCircleIcon, XCircleIcon, ArrowDownTrayIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, XCircleIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { getSettings } from '../utils/settings';
 import { getHistory, saveSession, updateSession, updateLectureInSession, createNewSession, toggleSessionExpanded } from '../utils/history';
 import ProgressTable from './ProgressTable';
@@ -23,7 +23,7 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
   });
   const [zipStatus, setZipStatus] = useState<'idle' | 'generating' | 'downloaded'>('idle');
   const [currentSession, setCurrentSession] = useState<GenerationSession | null>(null);
-  const [history, setHistory] = useState<GenerationSession[]>([]);
+  const [, setHistory] = useState<GenerationSession[]>([]);
 
   // Use ref to track session ID without causing re-renders in useEffect
   const sessionIdRef = useRef<string | null>(null);

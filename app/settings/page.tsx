@@ -97,7 +97,7 @@ export default function SettingsPage() {
                 {saveStatus === 'success' && (
                     <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-center gap-3 animate-fadeIn">
                         <CheckCircleIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
-                        <span className="text-green-700 dark:text-green-300">Settings saved to your browser's local storage!</span>
+                        <span className="text-green-700 dark:text-green-300">Settings saved to your browser&apos;s local storage!</span>
                     </div>
                 )}
 
@@ -133,7 +133,7 @@ export default function SettingsPage() {
 
                     <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
                         <p className="text-sm text-amber-700 dark:text-amber-300">
-                            <strong>💡 Tip:</strong> For the "One file per section" output format, avoid emoji in headings as they may break the table of contents links.
+                            <strong>💡 Tip:</strong> For the &quot;One file per section&quot; output format, avoid emoji in headings as they may break the table of contents links.
                         </p>
                     </div>
                 </section>
@@ -152,8 +152,8 @@ export default function SettingsPage() {
                     <div className="space-y-3">
                         {/* File per chapter option */}
                         <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${settings.outputFormat === 'file-per-chapter'
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                : 'border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                            : 'border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
                             }`}>
                             <input
                                 type="radio"
@@ -181,8 +181,8 @@ export default function SettingsPage() {
 
                         {/* File per section option */}
                         <label className={`flex items-start gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${settings.outputFormat === 'file-per-section'
-                                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                                : 'border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
+                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+                            : 'border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600'
                             }`}>
                             <input
                                 type="radio"
@@ -229,7 +229,7 @@ export default function SettingsPage() {
                 {/* Info Box */}
                 <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
                     <p className="text-sm text-blue-700 dark:text-blue-300">
-                        <strong>ℹ️ Storage Info:</strong> Your settings are stored locally in your browser's localStorage. They will persist across sessions but are not synced across devices.
+                        <strong>ℹ️ Storage Info:</strong> Your settings are stored locally in your browser&apos;s localStorage. They will persist across sessions but are not synced across devices.
                     </p>
                 </div>
             </div>

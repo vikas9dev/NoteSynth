@@ -38,7 +38,7 @@ export default function HowNoteSynthWorks() {
                 <div className="glass-card rounded-2xl p-8 mb-12">
                     <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                         Ever wondered how NoteSynth transforms video lectures into perfectly formatted study notes?
-                        In this post, we'll walk you through the entire process—from entering your Udemy cookie to downloading your organized notes.
+                        In this post, we&apos;ll walk you through the entire process—from entering your Udemy cookie to downloading your organized notes.
                     </p>
                 </div>
 
@@ -63,7 +63,7 @@ export default function HowNoteSynthWorks() {
                                 </p>
                                 <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
                                     <p className="text-sm text-blue-700 dark:text-blue-300">
-                                        📝 <strong>Note:</strong> Your cookie is stored only in your browser's local storage. It never leaves your device except to make requests directly to Udemy.
+                                        📝 <strong>Note:</strong> Your cookie is stored only in your browser&apos;s local storage. It never leaves your device except to make requests directly to Udemy.
                                     </p>
                                 </div>
                             </div>
@@ -80,7 +80,7 @@ export default function HowNoteSynthWorks() {
                                     <h3 className="text-xl font-bold text-gray-900 dark:text-white">Course Discovery</h3>
                                 </div>
                                 <p className="text-gray-600 dark:text-gray-300 mb-3">
-                                    Once authenticated, NoteSynth fetches your enrolled courses from Udemy's API, including:
+                                    Once authenticated, NoteSynth fetches your enrolled courses from Udemy&apos;s API, including:
                                 </p>
                                 <div className="grid sm:grid-cols-3 gap-3">
                                     {['Course titles & thumbnails', 'Your progress on each course', 'Curriculum (chapters & lectures)'].map((item, i) => (
@@ -104,7 +104,7 @@ export default function HowNoteSynthWorks() {
                                     <h3 className="text-xl font-bold text-gray-900 dark:text-white">Lecture Selection</h3>
                                 </div>
                                 <p className="text-gray-600 dark:text-gray-300">
-                                    You choose which lectures you want notes for. Select individual lectures, entire chapters, or choose "Select All" for the complete course.
+                                    You choose which lectures you want notes for. Select individual lectures, entire chapters, or choose &quot;Select All&quot; for the complete course.
                                 </p>
                                 <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
                                     <p className="text-sm text-amber-700 dark:text-amber-300">
