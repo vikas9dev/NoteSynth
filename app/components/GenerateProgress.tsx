@@ -174,104 +174,104 @@ export default function GenerateProgress({ courseId, lectureIds, onClose, isGene
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 scale-in">
-      <div className="glass-card rounded-2xl p-8 w-full max-w-md shadow-2xl">
-        {/* Header */}
-        <div className="text-center mb-6">
-          {progress.status === 'completed' && zipStatus === 'downloaded' ? (
-            <>
-              <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4 animate-bounce" />
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Success!
-              </h3>
-            </>
-          ) : progress.status === 'error' ? (
-            <>
-              <XCircleIcon className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Error
-              </h3>
-            </>
-          ) : (
-            <>
-              <div className="relative w-16 h-16 mx-auto mb-4">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 opacity-20 animate-ping"></div>
-                <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-xl">
-                  {progress.progress}%
+    <div className="fixed bottom-0 left-0 right-0 z-40 animate-slide-up">
+      <div className="max-w-4xl mx-auto px-4 pb-4">
+        <div className="glass-card rounded-2xl p-6 shadow-2xl border border-gray-200/50 dark:border-slate-700/50">
+          <div className="flex items-center gap-6">
+            {/* Status Icon */}
+            <div className="flex-shrink-0">
+              {progress.status === 'completed' && zipStatus === 'downloaded' ? (
+                <div className="w-14 h-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <CheckCircleIcon className="h-8 w-8 text-green-500" />
                 </div>
+              ) : progress.status === 'error' ? (
+                <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <XCircleIcon className="h-8 w-8 text-red-500" />
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 opacity-20 animate-ping"></div>
+                  <div className="relative flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-lg">
+                    {progress.progress}%
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Content */}
+            <div className="flex-grow min-w-0">
+              {/* Title and Status */}
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {progress.status === 'completed' && zipStatus === 'downloaded'
+                    ? 'Success!'
+                    : progress.status === 'error'
+                      ? 'Error'
+                      : 'Generating Notes'}
+                </h3>
+                {zipStatus === 'generating' && (
+                  <span className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 font-medium">
+                    <ArrowDownTrayIcon className="h-4 w-4 animate-bounce" />
+                    Creating ZIP...
+                  </span>
+                )}
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Generating Notes
-              </h3>
-            </>
-          )}
-        </div>
 
-        {/* Progress Bar */}
-        {progress.status !== 'error' && (
-          <div className="mb-6">
-            <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
-              <div
-                className="h-3 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 transition-all duration-500 ease-out relative overflow-hidden"
-                style={{ width: `${progress.progress}%` }}
-              >
-                {/* Shimmer effect */}
-                <div className="absolute inset-0 shimmer"></div>
+              {/* Progress Bar */}
+              {progress.status !== 'error' && (
+                <div className="mb-2">
+                  <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="h-2 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 transition-all duration-500 ease-out relative overflow-hidden"
+                      style={{ width: `${progress.progress}%` }}
+                    >
+                      <div className="absolute inset-0 shimmer"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Status Messages */}
+              <div className="flex items-center gap-4 text-sm">
+                {zipStatus === 'downloaded' ? (
+                  <span className="text-green-600 dark:text-green-400 font-medium">
+                    ✓ File downloaded successfully!
+                  </span>
+                ) : progress.status === 'error' ? (
+                  <span className="text-red-600 dark:text-red-400">{progress.message}</span>
+                ) : (
+                  <>
+                    {progress.chapter && (
+                      <span className="text-gray-600 dark:text-gray-400 truncate">
+                        <span className="font-medium">Chapter:</span> {progress.chapter}
+                      </span>
+                    )}
+                    {progress.lecture && (
+                      <span className="text-gray-600 dark:text-gray-400 truncate">
+                        <span className="font-medium">Lecture:</span> {progress.lecture}
+                      </span>
+                    )}
+                    {!progress.chapter && !progress.lecture && (
+                      <span className="text-gray-600 dark:text-gray-400">{progress.message}</span>
+                    )}
+                  </>
+                )}
               </div>
             </div>
-            <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-2 font-medium">
-              {progress.progress}% Complete
-            </p>
-          </div>
-        )}
 
-        {/* Status Messages */}
-        <div className="space-y-3 mb-6">
-          {zipStatus === 'generating' && (
-            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold">
-              <ArrowDownTrayIcon className="h-5 w-5 animate-bounce" />
-              <p>Generating ZIP file...</p>
-            </div>
-          )}
-          {zipStatus === 'downloaded' && (
-            <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-semibold">
-              <CheckCircleIcon className="h-5 w-5" />
-              <p>File downloaded successfully!</p>
-            </div>
-          )}
-          {zipStatus === 'idle' && progress.status !== 'error' && (
-            <p className="text-gray-700 dark:text-gray-300">{progress.message}</p>
-          )}
-          {progress.status === 'error' && (
-            <p className="text-red-600 dark:text-red-400">{progress.message}</p>
-          )}
+            {/* Close Button */}
+            {(progress.status === 'error' || zipStatus === 'downloaded') && (
+              <div className="flex-shrink-0">
+                <button
+                  onClick={onClose}
+                  className="btn-gradient px-6 py-2 text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* Details */}
-        {(progress.chapter || progress.lecture) && progress.status !== 'error' && (
-          <div className="bg-indigo-50 dark:bg-slate-800/50 rounded-lg p-4 space-y-2 mb-6">
-            {progress.chapter && (
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                <span className="font-semibold">Chapter:</span> {progress.chapter}
-              </p>
-            )}
-            {progress.lecture && (
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                <span className="font-semibold">Lecture:</span> {progress.lecture}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Close Button */}
-        {(progress.status === 'error' || zipStatus === 'downloaded') && (
-          <button
-            onClick={onClose}
-            className="w-full btn-gradient"
-          >
-            Close
-          </button>
-        )}
       </div>
     </div>
   );

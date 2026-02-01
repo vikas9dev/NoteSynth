@@ -53,7 +53,7 @@ export default function Footer() {
           <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
             <span>&copy; {year} Made with</span>
             <HeartIcon className="h-4 w-4 text-red-500 animate-pulse" />
-            <span>by vikas9dev</span>
+            <span>by <a href="https://github.com/vikas9dev" target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">vikas9dev</a></span>
           </div>
         </div>
       </div>

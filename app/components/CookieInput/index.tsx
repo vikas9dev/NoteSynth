@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { UdemyCourse } from '../../types/udemy';
-import { LockClosedIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { LockClosedIcon, CheckCircleIcon, ExclamationCircleIcon, BeakerIcon } from '@heroicons/react/24/outline';
 import { SparklesIcon } from '@heroicons/react/24/solid';
 
 interface CookieInputProps {
@@ -12,6 +12,7 @@ interface CookieInputProps {
 export default function CookieInput({ onCoursesLoaded }: CookieInputProps) {
   const [cookie, setCookie] = useState('');
   const [loading, setLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
@@ -88,7 +89,28 @@ export default function CookieInput({ onCoursesLoaded }: CookieInputProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     localStorage.setItem('udemyCookie', cookie);
+    localStorage.removeItem('isDemoMode'); // Clear demo mode when using real cookie
     await fetchCourses(cookie);
+  };
+
+  const loadDemoCourses = async () => {
+    setDemoLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/demo/demoCourses.json');
+      if (!response.ok) throw new Error('Failed to load demo courses');
+      const data = await response.json();
+      localStorage.setItem('isDemoMode', 'true');
+      localStorage.setItem('storedCourses', JSON.stringify(data.results));
+      localStorage.removeItem('udemyCookie'); // Clear any real cookie
+      onCoursesLoaded(data.results);
+      setSuccess(true);
+    } catch (err) {
+      setError('Failed to load demo courses. Please try again.');
+      console.error('Demo load error:', err);
+    } finally {
+      setDemoLoading(false);
+    }
   };
 
   return (
@@ -197,6 +219,45 @@ export default function CookieInput({ onCoursesLoaded }: CookieInputProps) {
                 </p>
               )}
             </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 dark:border-slate-700"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white dark:bg-slate-800 text-gray-500 dark:text-gray-400">or</span>
+              </div>
+            </div>
+
+            {/* Demo Button */}
+            <button
+              type="button"
+              onClick={loadDemoCourses}
+              disabled={demoLoading}
+              className="w-full py-3 px-6 rounded-lg font-semibold text-gray-700 dark:text-gray-300 
+                bg-gray-100 dark:bg-slate-700 border-2 border-dashed border-gray-300 dark:border-slate-600
+                hover:bg-gray-200 dark:hover:bg-slate-600 hover:border-indigo-400 dark:hover:border-purple-500
+                transition-all duration-300 disabled:opacity-50"
+            >
+              <span className="flex items-center justify-center gap-2">
+                {demoLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Loading Demo...</span>
+                  </>
+                ) : (
+                  <>
+                    <BeakerIcon className="h-5 w-5 text-indigo-500" />
+                    <span>Explore Demo Courses</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">(No cookie required)</span>
+                  </>
+                )}
+              </span>
+            </button>
 
             {/* Error Message */}
             {error && (
