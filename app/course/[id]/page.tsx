@@ -472,6 +472,7 @@ export default function CoursePage({ params }: PageProps) {
         isGenerating={isGenerating}
         onClose={() => setIsGenerating(false)}
         courseId={id}
+        courseTitle={courseInfo?.title}
         lectureIds={Array.from(selectedLectures)}
       />
 

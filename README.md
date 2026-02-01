@@ -107,11 +107,14 @@ NoteSynth is built to handle the aggressive rate limits of free-tier AI provider
 ### Features
 
 - 🤖 **Multi-AI Support**: Integrated with Groq (Llama 3.3) and Google Gemini (1.5 Flash).
+- 📊 **Real-Time Progress**: Watch lecture-by-lecture progress with live status updates for captions and LLM processing.
+- 📜 **Generation History**: Track all your past sessions in the dedicated History page with download filenames.
+- ⚙️ **Complete Customization**: Edit AI prompts and choose between **Chapter-based** or **Section-based** output formats.
 - 🔄 **Resilient Processing**: Built-in exponential backoff and provider fallback system.
 - 📚 **Organized Output**: ZIP files structured by chapters and lecture indices.
 - 🎨 **Smart Markdown**: Detects **Tips**, **Warnings**, and **Examples** with emojis and bolding.
 - 📦 **One-Click Export**: Batch download entire chapters as a single ZIP.
-- 💾 **Local Cache**: Securely stores your cookie and course list in browser storage.
+- 💾 **Local Cache**: Securely stores your cookie, course list, and history in browser storage.
 
 ---
 

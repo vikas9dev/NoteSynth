@@ -116,8 +116,34 @@ export default function HowNoteSynthWorks() {
 
                         {/* Step 4 */}
                         <div className="glass-card rounded-2xl p-6 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center rounded-br-2xl">
+                            <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center rounded-br-2xl">
                                 <span className="text-white font-bold text-xl">4</span>
+                            </div>
+                            <div className="ml-20">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <KeyIcon className="h-6 w-6 text-pink-500" />
+                                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Configure Settings (Optional)</h3>
+                                </div>
+                                <p className="text-gray-600 dark:text-gray-300 mb-3">
+                                    Tailor the output to your liking by visiting the Settings page:
+                                </p>
+                                <div className="grid sm:grid-cols-2 gap-3 mb-2">
+                                    <div className="p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg">
+                                        <p className="font-semibold text-gray-900 dark:text-white text-sm mb-1">Custom Prompt</p>
+                                        <p className="text-gray-600 dark:text-gray-400 text-xs">Edit the AI instructions to change formatting, add sections, or adjust note style.</p>
+                                    </div>
+                                    <div className="p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg">
+                                        <p className="font-semibold text-gray-900 dark:text-white text-sm mb-1">Output Format</p>
+                                        <p className="text-gray-600 dark:text-gray-400 text-xs">Choose between individual files per chapter or combined files with Table of Contents.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Step 5 */}
+                        <div className="glass-card rounded-2xl p-6 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center rounded-br-2xl">
+                                <span className="text-white font-bold text-xl">5</span>
                             </div>
                             <div className="ml-20">
                                 <div className="flex items-center gap-3 mb-3">
@@ -163,10 +189,10 @@ def example():
                             </div>
                         </div>
 
-                        {/* Step 5 */}
+                        {/* Step 6 */}
                         <div className="glass-card rounded-2xl p-6 relative overflow-hidden">
                             <div className="absolute top-0 left-0 w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center rounded-br-2xl">
-                                <span className="text-white font-bold text-xl">5</span>
+                                <span className="text-white font-bold text-xl">6</span>
                             </div>
                             <div className="ml-20">
                                 <div className="flex items-center gap-3 mb-3">

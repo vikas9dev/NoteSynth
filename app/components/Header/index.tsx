@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { SunIcon, MoonIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { SunIcon, MoonIcon, Bars3Icon, XMarkIcon, Cog6ToothIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 export default function Header() {
   const [isDark, setIsDark] = useState(false);
@@ -53,17 +53,28 @@ export default function Header() {
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
           </Link>
           <Link
-            href="#"
-            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 relative group"
-          >
-            My Courses
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
-          </Link>
-          <Link
             href="/blog"
             className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 relative group"
           >
             Blog
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+          </Link>
+          <Link
+            href="/history"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 relative group flex items-center gap-1"
+            title="History"
+          >
+            <ClockIcon className="h-5 w-5" />
+            <span className="md:hidden lg:inline">History</span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
+          </Link>
+          <Link
+            href="/settings"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 relative group flex items-center gap-1"
+            title="Settings"
+          >
+            <Cog6ToothIcon className="h-5 w-5" />
+            <span className="md:hidden lg:inline">Settings</span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
           </Link>
 
@@ -107,18 +118,27 @@ export default function Header() {
               Home
             </Link>
             <Link
-              href="#"
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 px-2 py-1"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              My Courses
-            </Link>
-            <Link
               href="/blog"
               className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 px-2 py-1"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Blog
+            </Link>
+            <Link
+              href="/history"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 px-2 py-1 flex items-center gap-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <ClockIcon className="h-5 w-5" />
+              History
+            </Link>
+            <Link
+              href="/settings"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 px-2 py-1 flex items-center gap-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Cog6ToothIcon className="h-5 w-5" />
+              Settings
             </Link>
 
             {/* Dark Mode Toggle for Mobile */}

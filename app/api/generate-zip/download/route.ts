@@ -5,7 +5,7 @@ import pLimit from 'p-limit';
 
 export async function POST(request: Request) {
   try {
-    const { courseId, lectureIds } = await request.json();
+    const { courseId, lectureIds, customPrompt, outputFormat = 'file-per-chapter' } = await request.json();
     const cookie = request.headers.get('X-Udemy-Cookie');
 
     if (!courseId || !lectureIds?.length || !cookie) {
@@ -36,13 +36,14 @@ export async function POST(request: Request) {
       objectIndex: number;
     }>>();
 
-    // Use dynamic concurrency based on provider - the llmService handles rate limiting internally
+    // Use dynamic concurrency based on provider
     const concurrencyLimit = getProviderConcurrencyLimit();
-    console.log(`Processing ${lectureIds.length} lectures with concurrency limit: ${concurrencyLimit}`);
+    console.log(`Processing ${lectureIds.length} lectures with concurrency limit: ${concurrencyLimit} (Output format: ${outputFormat})`);
+
     const limit = pLimit(concurrencyLimit);
     const lecturePromises = lectureIds.map((lectureId: string) =>
       limit(async () => {
-        const lectureInfo = await getLectureInfo(courseId, lectureId, cookie, courseInfo);
+        const lectureInfo = await getLectureInfo(courseId, lectureId, cookie, courseInfo, customPrompt);
         if (lectureInfo) {
           const { chapterTitle, lectureTitle, content, objectIndex } = lectureInfo;
           return { chapterTitle, lectureTitle, content, objectIndex, id: lectureId };
@@ -70,23 +71,67 @@ export async function POST(request: Request) {
       });
     }
 
-    // Sort chapters and create folder structure
+    // Sort chapters and create structure
     const sortedChapters = courseInfo.chapters
       .filter(chapter => lecturesByChapter.has(chapter.title))
       .sort((a, b) => a.objectIndex - b.objectIndex);
 
-    for (const chapter of sortedChapters) {
-      const chapterFolder = zip.folder(`${parentFolder}/${formatIndex(chapter.objectIndex)}-${sanitizeFileName(chapter.title)}`);
-      if (!chapterFolder) continue;
+    if (outputFormat === 'file-per-section') {
+      // Create a single flat folder or no folder if user prefers, currently we keep the parent folder
+      const rootFolder = zip.folder(parentFolder);
 
-      // Get lectures for this chapter and sort them
-      const lectures = lecturesByChapter.get(chapter.title) || [];
-      lectures.sort((a, b) => a.objectIndex - b.objectIndex);
+      for (const chapter of sortedChapters) {
+        // Get lectures for this chapter and sort them
+        const lectures = lecturesByChapter.get(chapter.title) || [];
+        lectures.sort((a, b) => a.objectIndex - b.objectIndex);
 
-      // Add lecture files to the chapter folder
-      for (const lecture of lectures) {
-        const fileName = `${formatIndex(lecture.objectIndex)}-${sanitizeFileName(lecture.title)}.md`;
-        chapterFolder.file(fileName, lecture.content);
+        // Remove emojis from chapter title for TOC compatibility
+        const cleanChapterTitle = chapter.title.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E6}-\u{1F1FF}]/gu, '').trim();
+
+        // Generate Section Markdown
+        let sectionMarkdown = `# ${cleanChapterTitle}\n\n`;
+
+        // Generate TOC
+        sectionMarkdown += `## Table of Contents\n\n`;
+        for (const lecture of lectures) {
+          const cleanLectureTitle = lecture.title.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E6}-\u{1F1FF}]/gu, '').trim();
+          const anchor = cleanLectureTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+          sectionMarkdown += `- [${cleanLectureTitle}](#${anchor})\n`;
+        }
+        sectionMarkdown += `\n---\n\n`;
+
+        // Add each lecture content
+        for (let i = 0; i < lectures.length; i++) {
+          const lecture = lectures[i];
+          // Ensure lecture title is H2 for TOC links to work correctly
+          // We assume LLM output might already have H2 or similar, but we enforce it for consistency
+          let content = lecture.content;
+
+          // If content doesn't start with H2, we could prepend it, but LLM usually does ## Title
+          // For safety, we can wrap/ensure headers
+          sectionMarkdown += content;
+
+          if (i < lectures.length - 1) {
+            sectionMarkdown += `\n\n---\n\n`;
+          }
+        }
+
+        const fileName = `${formatIndex(chapter.objectIndex)}_${sanitizeFileName(chapter.title)}_combined.md`;
+        rootFolder?.file(fileName, sectionMarkdown);
+      }
+    } else {
+      // DEFAULT: One file per chapter/lecture
+      for (const chapter of sortedChapters) {
+        const chapterFolder = zip.folder(`${parentFolder}/${formatIndex(chapter.objectIndex)}-${sanitizeFileName(chapter.title)}`);
+        if (!chapterFolder) continue;
+
+        const lectures = lecturesByChapter.get(chapter.title) || [];
+        lectures.sort((a, b) => a.objectIndex - b.objectIndex);
+
+        for (const lecture of lectures) {
+          const fileName = `${formatIndex(lecture.objectIndex)}-${sanitizeFileName(lecture.title)}.md`;
+          chapterFolder.file(fileName, lecture.content);
+        }
       }
     }
 

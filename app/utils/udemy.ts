@@ -5,6 +5,8 @@ export interface LectureInfo {
   lectureTitle: string;
   content: string;
   objectIndex: number;
+  llmSuccess: boolean;
+  llmProvider?: string;
 }
 
 export interface CourseInfo {
@@ -75,7 +77,8 @@ export async function getLectureInfo(
   courseId: string,
   lectureId: string,
   cookie: string,
-  preFetchedCourseInfo?: CourseInfo
+  preFetchedCourseInfo?: CourseInfo,
+  customPrompt?: string
 ): Promise<LectureInfo | null> {
   try {
     // Use pre-fetched course info if available, otherwise fetch it
@@ -122,6 +125,8 @@ export async function getLectureInfo(
 
     // Get English captions if available
     let content = '';
+    let llmSuccess = true;  // Default true, set false on failure
+    let llmProvider: string | undefined;
     if (data.asset?.captions?.length > 0) {
       // Find the English caption - it should be a complete object with url
       const englishCaption = data.asset.captions.find((c: unknown) =>
@@ -139,7 +144,10 @@ export async function getLectureInfo(
 
         // Convert VTT content to markdown and generate structured notes
         const markdownContent = convertVttToMarkdown(vttContent);
-        content = await generateStructuredNotes(markdownContent, lectureInfo.title);
+        const result = await generateStructuredNotes(markdownContent, lectureInfo.title, customPrompt);
+        content = result.content;
+        llmSuccess = result.llmSuccess;
+        llmProvider = result.provider;
       } else {
         console.log('No valid English captions found:', data.asset.captions);
       }
@@ -147,13 +155,16 @@ export async function getLectureInfo(
 
     if (!content) {
       content = `## ${lectureInfo.title}\n\nNo captions available for this lecture.`;
+      llmSuccess = false;
     }
 
     return {
       chapterTitle: chapterInfo.title,
       lectureTitle: lectureInfo.title,
       content,
-      objectIndex: lectureInfo.objectIndex
+      objectIndex: lectureInfo.objectIndex,
+      llmSuccess,
+      llmProvider
     };
   } catch (error) {
     console.error(`Error fetching lecture info for ${lectureId}:`, error);

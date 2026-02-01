@@ -6,12 +6,28 @@ import { BookOpenIcon, ClockIcon, ArrowRightIcon } from '@heroicons/react/24/out
 // Blog metadata - in a real app this would come from a CMS or file system
 const blogs = [
     {
+        slug: 'history-and-progress',
+        title: 'Real-Time Progress & Generation History',
+        description: 'Watch your notes being generated in real-time with our new progress table. Plus, track all your past sessions in the dedicated History page.',
+        readTime: '3 min',
+        date: 'February 2026',
+        featured: true,
+    },
+    {
+        slug: 'new-features-customization',
+        title: 'Introducing Complete Customization: NoteSynth 2.0',
+        description: 'Take full control of your notes with custom AI prompts and flexible output formats. Learn how to tailor NoteSynth to your learning style.',
+        readTime: '4 min',
+        date: 'February 2026',
+        featured: false,
+    },
+    {
         slug: 'what-is-notesynth',
         title: 'Transform Your Udemy Course Videos into Beautiful Study Notes with NoteSynth',
         description: 'Discover how NoteSynth automatically converts your Udemy course videos into well-structured, beautiful Markdown notes you can review anytime.',
         readTime: '5 min',
         date: 'February 2026',
-        featured: true,
+        featured: false,
     },
     {
         slug: 'how-notesynth-works',

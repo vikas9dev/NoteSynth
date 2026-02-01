@@ -3,13 +3,13 @@ import pLimit from 'p-limit';
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Per-provider rate limiters for better parallelism
-// Groq: 30 RPM free tier, so ~2 seconds between requests (being conservative)
+// Groq: 30 RPM free tier - increased interval to avoid rate limiting
 // Gemini: 60 RPM free tier, so ~1 second between requests
 const providerState = {
   groq: {
     lastRequestTime: 0,
-    minInterval: 2000,  // 2 seconds between Groq requests
-    concurrencyLimit: pLimit(3), // Allow 3 concurrent Groq requests
+    minInterval: 4000,  // 4 seconds between Groq requests (conservative for free tier)
+    concurrencyLimit: pLimit(2), // Reduced to 2 concurrent Groq requests
   },
   gemini: {
     lastRequestTime: 0,
@@ -131,7 +131,17 @@ async function callProviderInternal(
   }
 }
 
-export async function generateStructuredNotes(vttContent: string, lectureTitle: string): Promise<string> {
+export interface GenerateNotesResult {
+  content: string;
+  llmSuccess: boolean;
+  provider?: string;
+}
+
+export async function generateStructuredNotes(
+  vttContent: string,
+  lectureTitle: string,
+  customPrompt?: string
+): Promise<GenerateNotesResult> {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
@@ -139,12 +149,17 @@ export async function generateStructuredNotes(vttContent: string, lectureTitle: 
     throw new Error('Neither GEMINI_API_KEY nor GROQ_API_KEY environment variable is set');
   }
 
-  // Load prompt template from external file
-  const fs = await import('fs/promises');
-  const path = await import('path');
-  const promptPath = path.join(process.cwd(), 'app/prompts/noteGeneration.txt');
-  const promptTemplate = await fs.readFile(promptPath, 'utf-8');
-  const prompt = promptTemplate.replace('{{TRANSCRIPT}}', vttContent);
+  let prompt: string;
+  if (customPrompt) {
+    prompt = customPrompt.replace('{{TRANSCRIPT}}', vttContent);
+  } else {
+    // Load default prompt template from external file
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const promptPath = path.join(process.cwd(), 'app/prompts/noteGeneration.txt');
+    const promptTemplate = await fs.readFile(promptPath, 'utf-8');
+    prompt = promptTemplate.replace('{{TRANSCRIPT}}', vttContent);
+  }
 
   // Strategy: Try Groq first (faster), fall back to Gemini
   const providersToTry: ('groq' | 'gemini')[] = [];
@@ -161,7 +176,7 @@ export async function generateStructuredNotes(vttContent: string, lectureTitle: 
         const text = await callProviderWithRateLimit(provider, prompt, { gemini: GEMINI_API_KEY, groq: GROQ_API_KEY });
         if (text) {
           console.log(`✓ Generated notes using ${provider.toUpperCase()}`);
-          return text;
+          return { content: text, llmSuccess: true, provider };
         }
         throw new Error('No content generated');
       } catch (error) {
@@ -183,8 +198,9 @@ export async function generateStructuredNotes(vttContent: string, lectureTitle: 
       }
     }
   }
-
-  return `# ${lectureTitle}\n\n${vttContent}`;
+  // All providers failed - return raw transcript as fallback but mark as failure
+  console.warn('All LLM providers failed. Returning raw transcript as fallback.');
+  return { content: `# ${lectureTitle}\n\n${vttContent}`, llmSuccess: false };
 }
 
 // Export concurrency limit for use in download route
