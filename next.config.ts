@@ -3,7 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
-    domains: ["img-c.udemycdn.com"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'img-c.udemycdn.com',
+      },
+    ],
   },
 };
 

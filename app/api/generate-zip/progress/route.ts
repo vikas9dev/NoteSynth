@@ -81,6 +81,7 @@ export async function GET(request: Request) {
           }
 
           // Send completion status for this lecture
+          // Send completion status for this lecture with CONTENT
           await sendProgress({
             progress: Math.round(((i + 1) / lectureIds.length) * 100),
             status: 'processing',
@@ -90,7 +91,12 @@ export async function GET(request: Request) {
             lecture: lectureInfo.lectureTitle,
             captionStatus: 'done',
             llmStatus: lectureInfo.llmSuccess ? 'done' : 'error',
-            llmProvider: lectureInfo.llmProvider
+            llmProvider: lectureInfo.llmProvider,
+            // Stream the data back to client
+            content: lectureInfo.content,
+            chapterTitle: lectureInfo.chapterTitle,
+            lectureTitle: lectureInfo.lectureTitle,
+            objectIndex: lectureInfo.objectIndex
           });
 
         } catch (error) {

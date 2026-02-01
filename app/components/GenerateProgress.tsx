@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import JSZip from 'jszip';
 import { Progress, GenerationSession, LectureProgress } from '../types/progress';
 import { CheckCircleIcon, XCircleIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { getSettings } from '../utils/settings';
@@ -27,6 +28,15 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
 
   // Use ref to track session ID without causing re-renders in useEffect
   const sessionIdRef = useRef<string | null>(null);
+
+  // Buffer to store generated content for client-side zipping
+  const contentBufferRef = useRef<Map<string, {
+    content: string;
+    chapterTitle: string;
+    lectureTitle: string;
+    objectIndex: number;
+    lectureId: string;
+  }>>(new Map());
 
   // Load history on mount
   useEffect(() => {
@@ -79,38 +89,85 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
 
     const abortController = new AbortController();
 
-    async function downloadZip() {
+    async function generateZipLocally() {
       try {
-        const cookie = localStorage.getItem('udemyCookie');
-        if (!cookie) {
-          throw new Error('No Udemy cookie found');
-        }
-
         const settings = getSettings();
+        const zip = new JSZip();
 
-        const response = await fetch('/api/generate-zip/download', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Udemy-Cookie': cookie || ''
-          },
-          body: JSON.stringify({
-            courseId,
-            lectureIds: lectureIds.map(id => id.toString()),
-            customPrompt: settings.customPrompt,
-            outputFormat: settings.outputFormat,
-          }),
-        });
+        // Helper to sanitize filenames
+        const sanitize = (name: string) => name.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').toLowerCase().trim();
+        const formatIndex = (idx: number) => idx.toString().padStart(2, '0');
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const sanitizedCourseTitle = sanitize(courseTitle || `course-${courseId}`);
+        const parentFolder = `${sanitizedCourseTitle}-${timestamp}`;
+        const root = zip.folder(parentFolder);
+
+        // Get all lectures and sort them
+        const lectures = Array.from(contentBufferRef.current.values())
+          .sort((a, b) => {
+            // We don't have global index easily here, but we can rely on how they came in or just chapter grouping
+            // For now, let's group by chapter
+            if (a.chapterTitle !== b.chapterTitle) return a.chapterTitle.localeCompare(b.chapterTitle);
+            return a.objectIndex - b.objectIndex;
+          });
+
+        if (settings.outputFormat === 'file-per-section') {
+          // Group by chapter
+          const byChapter = new Map<string, typeof lectures>();
+          lectures.forEach(l => {
+            if (!byChapter.has(l.chapterTitle)) byChapter.set(l.chapterTitle, []);
+            byChapter.get(l.chapterTitle)?.push(l);
+          });
+
+          // Generate combined files
+          let chapterIndex = 1;
+          for (const [chapterTitle, chapterLectures] of byChapter.entries()) {
+            chapterLectures.sort((a, b) => a.objectIndex - b.objectIndex);
+
+            const cleanChapter = chapterTitle.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E6}-\u{1F1FF}]/gu, '').trim();
+
+            let md = `# ${cleanChapter}\n\n## Table of Contents\n\n`;
+
+            // TOC
+            for (const l of chapterLectures) {
+              const cleanTitle = l.lectureTitle.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E6}-\u{1F1FF}]/gu, '').trim();
+              const anchor = cleanTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+              md += `- [${cleanTitle}](#${anchor})\n`;
+            }
+            md += '\n---\n\n';
+
+            // Content
+            for (let i = 0; i < chapterLectures.length; i++) {
+              md += chapterLectures[i].content;
+              if (i < chapterLectures.length - 1) md += '\n\n---\n\n';
+            }
+
+            const filename = `${formatIndex(chapterIndex)}_${sanitize(chapterTitle)}_combined.md`;
+            root?.file(filename, md);
+            chapterIndex++;
+          }
+
+        } else {
+          // File per lecture
+          // We need to keep track of chapter indices roughly. 
+          // Since we might receive them out of order, we simply use the chapter title as folder
+
+          for (const l of lectures) {
+            const folderName = sanitize(l.chapterTitle);
+            const fileName = `${formatIndex(l.objectIndex)}-${sanitize(l.lectureTitle)}.md`;
+
+            // Try to use index if we can infer it, otherwise simple folder
+            const chapterFolder = root?.folder(folderName);
+            chapterFolder?.file(fileName, l.content);
+          }
         }
 
-        const blob = await response.blob();
+        const blob = await zip.generateAsync({ type: 'blob' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = response.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g, '') || 'udemy-notes.zip';
+        a.download = `${sanitizedCourseTitle}-${timestamp}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -120,30 +177,16 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
         setProgress(prev => ({
           ...prev,
           status: 'completed',
-          message: 'Notes downloaded successfully!'
+          message: 'Notes (Client-Side) generated successfully!'
         }));
 
-        // Update session status with filename
-        if (sessionIdRef.current) {
-          const filename = a.download;
-          updateSession(sessionIdRef.current, { status: 'completed', downloadedFilename: filename });
-          setCurrentSession(prev => prev ? { ...prev, status: 'completed', downloadedFilename: filename } : null);
-          setHistory(getHistory());
-        }
-
       } catch (error) {
-        console.error('Error downloading ZIP:', error);
+        console.error('Error generating client-side ZIP:', error);
         setProgress({
           progress: 100,
           status: 'error',
-          message: error instanceof Error ? error.message : 'Failed to download the ZIP file. Please try again.',
+          message: 'Failed to generate ZIP locally.'
         });
-
-        if (sessionIdRef.current) {
-          updateSession(sessionIdRef.current, { status: 'error' });
-          setCurrentSession(prev => prev ? { ...prev, status: 'error' } : null);
-          setHistory(getHistory());
-        }
       }
     }
 
@@ -213,13 +256,24 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
                   });
                 }
 
+                // Buffer content if present
+                if (data.content && data.lectureId && data.chapterTitle && data.lectureTitle) {
+                  contentBufferRef.current.set(data.lectureId, {
+                    content: data.content,
+                    chapterTitle: data.chapterTitle,
+                    lectureTitle: data.lectureTitle,
+                    objectIndex: data.objectIndex || 0,
+                    lectureId: data.lectureId
+                  });
+                }
+
                 if (data.status === 'completed') {
                   setZipStatus('generating');
                   setProgress(prev => ({
                     ...prev,
-                    message: 'Generating ZIP file...'
+                    message: 'Generating ZIP file locally...'
                   }));
-                  downloadZip();
+                  generateZipLocally();
                   return;
                 }
               } catch (e) {

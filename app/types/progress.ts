@@ -10,6 +10,11 @@ export interface Progress {
   captionStatus?: 'pending' | 'fetching' | 'done' | 'error';
   llmStatus?: 'pending' | 'calling' | 'done' | 'error' | 'retrying';
   llmProvider?: string;
+  // Fields for data streaming
+  content?: string;
+  chapterTitle?: string;
+  lectureTitle?: string;
+  objectIndex?: number;
 }
 
 export interface LectureProgress {
