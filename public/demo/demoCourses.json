@@ -1,0 +1,151 @@
+{
+    "count": 17,
+    "next": "https://www.udemy.com/api-2.0/users/me/subscribed-courses/?fields%5Bcourse%5D=completion_ratio%2Cimage_240x135%2Cimage_480x270%2Cnum_collections%2Cpublished_title%2Ctitle%2Ctracking_id%2Curl&ordering=-last_accessed&page=2",
+    "previous": null,
+    "results": [
+        {
+            "_class": "course",
+            "id": 4039556,
+            "title": "Decoding DevOps – From Basics to Advanced Projects with AI",
+            "url": "/course/decodingdevops/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/4039556_ebb3_9.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/4039556_ebb3_9.jpg",
+            "published_title": "decodingdevops",
+            "tracking_id": "",
+            "completion_ratio": 83.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 3984552,
+            "title": "[NEW] Master Microservices with SpringBoot,Docker,Kubernetes",
+            "url": "/course/master-microservices-with-spring-docker-kubernetes/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/3984552_b313_6.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/3984552_b313_6.jpg",
+            "published_title": "master-microservices-with-spring-docker-kubernetes",
+            "tracking_id": "",
+            "completion_ratio": 60.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 1793828,
+            "title": "Docker and Kubernetes: The Complete Guide",
+            "url": "/course/docker-and-kubernetes-the-complete-guide/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/1793828_7999_2.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/1793828_7999_2.jpg",
+            "published_title": "docker-and-kubernetes-the-complete-guide",
+            "tracking_id": "",
+            "completion_ratio": 100.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 1988542,
+            "title": "Kubernetes Certified Application Developer (CKAD) with Tests",
+            "url": "/course/certified-kubernetes-application-developer/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/1988542_3bcb_15.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/1988542_3bcb_15.jpg",
+            "published_title": "certified-kubernetes-application-developer",
+            "tracking_id": "",
+            "completion_ratio": 0.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 2196488,
+            "title": "Ultimate AWS Certified Solutions Architect Associate 2026",
+            "url": "/course/aws-certified-solutions-architect-associate-saa-c03/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/2196488_8fc7_10.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/2196488_8fc7_10.jpg",
+            "published_title": "aws-certified-solutions-architect-associate-saa-c03",
+            "tracking_id": "",
+            "completion_ratio": 99.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 3485044,
+            "title": "Spring Security Zero to Master along with JWT,OAUTH2",
+            "url": "/course/spring-security-zero-to-master/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/3485044_ef54_2.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/3485044_ef54_2.jpg",
+            "published_title": "spring-security-zero-to-master",
+            "tracking_id": "",
+            "completion_ratio": 0.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 1921420,
+            "title": "Ultimate AWS Certified Developer Associate 2026 DVA-C02",
+            "url": "/course/aws-certified-developer-associate-dva-c01/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/1921420_384a_14.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/1921420_384a_14.jpg",
+            "published_title": "aws-certified-developer-associate-dva-c01",
+            "tracking_id": "",
+            "completion_ratio": 3.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 744622,
+            "title": "Shell Scripting",
+            "url": "/course/shell-scripting-i/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/744622_1182_4.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/744622_1182_4.jpg",
+            "published_title": "shell-scripting-i",
+            "tracking_id": "",
+            "completion_ratio": 5.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 6745851,
+            "title": "From Java Dev to AI Engineer: Spring AI Fast Track",
+            "url": "/course/java-spring-ai/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/6745851_bb37_3.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/6745851_bb37_3.jpg",
+            "published_title": "java-spring-ai",
+            "tracking_id": "",
+            "completion_ratio": 95.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 5170404,
+            "title": "The Complete AI Guide: Learn ChatGPT, Generative AI & More",
+            "url": "/course/complete-ai-guide/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/5170404_d282_12.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/5170404_d282_12.jpg",
+            "published_title": "complete-ai-guide",
+            "tracking_id": "",
+            "completion_ratio": 9.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 3142166,
+            "title": "[NEW] Ultimate AWS Certified Cloud Practitioner CLF-C02 2026",
+            "url": "/course/aws-certified-cloud-practitioner-new/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/3142166_a637_3.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/3142166_a637_3.jpg",
+            "published_title": "aws-certified-cloud-practitioner-new",
+            "tracking_id": "",
+            "completion_ratio": 82.0,
+            "num_collections": 0
+        },
+        {
+            "_class": "course",
+            "id": 2271790,
+            "title": "Go Java Full Stack with Spring Boot and React [2022]",
+            "url": "/course/full-stack-application-with-spring-boot-and-react/learn/",
+            "image_240x135": "https://img-c.udemycdn.com/course/240x135/2271790_dbfb_5.jpg",
+            "image_480x270": "https://img-c.udemycdn.com/course/480x270/2271790_dbfb_5.jpg",
+            "published_title": "full-stack-application-with-spring-boot-and-react",
+            "tracking_id": "",
+            "completion_ratio": 61.0,
+            "num_collections": 0
+        }
+    ]
+}

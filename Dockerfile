@@ -6,9 +6,9 @@ ARG VERSION=latest
 
 # Image metadata (visible on Docker Hub)
 LABEL org.opencontainers.image.title="NoteSynth"
-LABEL org.opencontainers.image.description="Generate AI-powered markdown notes from Udemy course captions using Gemini API"
-LABEL org.opencontainers.image.documentation="https://github.com/YOUR_USERNAME/NoteSynth#docker"
-LABEL org.opencontainers.image.source="https://github.com/YOUR_USERNAME/NoteSynth"
+LABEL org.opencontainers.image.description="Generate AI-powered markdown notes from Udemy course captions using Groq/Gemini API"
+LABEL org.opencontainers.image.documentation="https://github.com/vikas9dev/NoteSynth#docker"
+LABEL org.opencontainers.image.source="https://github.com/vikas9dev/NoteSynth"
 LABEL org.opencontainers.image.version="${VERSION}"
 
 WORKDIR /app
@@ -31,9 +31,10 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Environment variable documentation (visible in docker inspect)
-# Users MUST provide GEMINI_API_KEY at runtime
+# Users MUST provide GEMINI_API_KEY or GROQ_API_KEY at runtime
 ENV NODE_ENV=production
-# GEMINI_API_KEY - Required: Your Gemini API key from https://aistudio.google.com/apikey
+# GEMINI_API_KEY - Optional: Your Gemini API key
+# GROQ_API_KEY - Optional: Your Groq API key
 
 # Create a non-root user for security
 RUN addgroup --system --gid 1001 nodejs

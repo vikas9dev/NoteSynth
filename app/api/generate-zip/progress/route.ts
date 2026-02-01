@@ -5,9 +5,20 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const courseId = searchParams.get('courseId');
   const lectureIds = searchParams.get('lectureIds')?.split(',');
-  
-  // Get cookie from header
+
+  // Get cookie and custom prompt from headers
   const headerCookie = request.headers.get('X-Udemy-Cookie');
+  // Custom prompt is Base64 encoded to handle Unicode characters in headers
+  const encodedPrompt = request.headers.get('X-Custom-Prompt-Encoded');
+  let customPrompt: string | undefined;
+  if (encodedPrompt) {
+    try {
+      customPrompt = decodeURIComponent(escape(atob(encodedPrompt)));
+    } catch (e) {
+      console.error('Failed to decode custom prompt:', e);
+    }
+  }
+
   if (!courseId || !lectureIds?.length || !headerCookie) {
     return new Response('Missing required parameters', { status: 400 });
   }
@@ -53,27 +64,44 @@ export async function GET(request: Request) {
       for (let i = 0; i < lectureIds.length; i++) {
         const lectureId = lectureIds[i];
         try {
-          // Get lecture info
-          const lectureInfo = await getLectureInfo(courseId, lectureId, headerCookie);
+          // Send caption fetching status
+          await sendProgress({
+            progress: Math.round((i / lectureIds.length) * 100),
+            status: 'processing',
+            message: `Fetching captions for lecture ${i + 1} of ${lectureIds.length}`,
+            lectureId,
+            captionStatus: 'fetching',
+            llmStatus: 'pending'
+          });
+
+          // Get lecture info (this fetches captions and calls LLM)
+          const lectureInfo = await getLectureInfo(courseId, lectureId, headerCookie, courseInfo, customPrompt);
           if (!lectureInfo) {
             throw new Error(`Failed to process lecture ${lectureId}`);
           }
 
-          // Send progress update
+          // Send completion status for this lecture
           await sendProgress({
             progress: Math.round(((i + 1) / lectureIds.length) * 100),
             status: 'processing',
-            message: `Processing lecture ${i + 1} of ${lectureIds.length}`,
+            message: `Completed lecture ${i + 1} of ${lectureIds.length}`,
+            lectureId,
             chapter: lectureInfo.chapterTitle,
-            lecture: lectureInfo.lectureTitle
+            lecture: lectureInfo.lectureTitle,
+            captionStatus: 'done',
+            llmStatus: lectureInfo.llmSuccess ? 'done' : 'error',
+            llmProvider: lectureInfo.llmProvider
           });
 
         } catch (error) {
           console.error(`Error processing lecture ${lectureId}:`, error);
           await sendProgress({
             progress: Math.round(((i + 1) / lectureIds.length) * 100),
-            status: 'error',
+            status: 'processing',
             message: `Failed to process lecture ${lectureId}`,
+            lectureId,
+            captionStatus: 'error',
+            llmStatus: 'error',
             error: error instanceof Error ? error.message : 'Unknown error'
           });
         }

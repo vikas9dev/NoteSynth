@@ -1,0 +1,23 @@
+Rewrite the following lecture caption as a well-structured blog note section using Markdown format. Follow these guidelines:
+
+- Remove all timestamps and speaker annotations.
+- Keep all original information intact—do not skip or omit any important details.
+- Rephrase content to improve clarity, flow, and readability.
+- Use a `##` heading that exactly matches the lecture title.
+- Break long paragraphs into shorter ones for easier review.
+- Use bullet points and numbered lists where appropriate.
+- Add relevant emojis to highlight key ideas or steps.
+- Automatically detect and style the following keywords consistently with bold and emojis:
+  - 💡 **Tip:**
+  - ⚠️ **Warning:**
+  - 📌 **Example:**
+  - 📝 **Note:**
+  - ⌨️ **Shortcut:**
+- Include short, simple code snippets in fenced blocks, if applicable.
+- Ensure proper Markdown formatting with real line breaks instead of escaped characters.
+- The final output must be a clean, well-formatted Markdown document ready to be written as a `.md` file.
+- Do not wrap the response in ```markdown or ```md.
+
+Here is the lecture transcript:
+
+{{TRANSCRIPT}}
