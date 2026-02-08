@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import { getCourseInfo, getLectureInfo } from './udemy';
-import { createSafeFolderName, createSafeZipPath } from './pathUtils';
+import { createSafeFolderName } from './pathUtils';
 
 export async function generateZipFile(
   courseId: string,
