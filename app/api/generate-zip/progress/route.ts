@@ -19,6 +19,14 @@ export async function GET(request: Request) {
     }
   }
 
+  // Get download content type - 'captions-only' skips AI processing
+  const downloadContentType = request.headers.get('X-Download-Content-Type');
+  const skipAI = downloadContentType === 'captions-only';
+
+  if (skipAI) {
+    console.log('Captions-only mode enabled - skipping AI processing');
+  }
+
   if (!courseId || !lectureIds?.length || !headerCookie) {
     return new Response('Missing required parameters', { status: 400 });
   }
@@ -68,14 +76,16 @@ export async function GET(request: Request) {
           await sendProgress({
             progress: Math.round((i / lectureIds.length) * 100),
             status: 'processing',
-            message: `Fetching captions for lecture ${i + 1} of ${lectureIds.length}`,
+            message: skipAI
+              ? `Fetching captions for lecture ${i + 1} of ${lectureIds.length}`
+              : `Processing lecture ${i + 1} of ${lectureIds.length}`,
             lectureId,
             captionStatus: 'fetching',
-            llmStatus: 'pending'
+            llmStatus: skipAI ? 'skipped' : 'pending'
           });
 
-          // Get lecture info (this fetches captions and calls LLM)
-          const lectureInfo = await getLectureInfo(courseId, lectureId, headerCookie, courseInfo, customPrompt);
+          // Get lecture info (this fetches captions and optionally calls LLM)
+          const lectureInfo = await getLectureInfo(courseId, lectureId, headerCookie, courseInfo, customPrompt, skipAI);
           if (!lectureInfo) {
             throw new Error(`Failed to process lecture ${lectureId}`);
           }

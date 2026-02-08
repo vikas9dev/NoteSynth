@@ -8,7 +8,7 @@ export interface Progress {
   // New fields for granular tracking
   lectureId?: string;
   captionStatus?: 'pending' | 'fetching' | 'done' | 'error';
-  llmStatus?: 'pending' | 'calling' | 'done' | 'error' | 'retrying';
+  llmStatus?: 'pending' | 'calling' | 'done' | 'error' | 'retrying' | 'skipped';
   llmProvider?: string;
   // Fields for data streaming
   content?: string;
@@ -22,7 +22,7 @@ export interface LectureProgress {
   chapter?: string;
   lecture?: string;
   captionStatus: 'pending' | 'fetching' | 'done' | 'error';
-  llmStatus: 'pending' | 'calling' | 'done' | 'error' | 'retrying';
+  llmStatus: 'pending' | 'calling' | 'done' | 'error' | 'retrying' | 'skipped';
   llmProvider?: string;
   error?: string;
 }

@@ -94,12 +94,18 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
         const settings = getSettings();
         const zip = new JSZip();
 
-        // Helper to sanitize filenames
-        const sanitize = (name: string) => name.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').toLowerCase().trim();
+        // Helper to sanitize filenames with length limits
+        const sanitize = (name: string, maxLen: number = 40) => {
+          let s = name.replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').toLowerCase().trim();
+          if (s.length > maxLen) {
+            s = s.substring(0, maxLen).replace(/-+$/, '');
+          }
+          return s || 'untitled';
+        };
         const formatIndex = (idx: number) => idx.toString().padStart(2, '0');
 
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const sanitizedCourseTitle = sanitize(courseTitle || `course-${courseId}`);
+        const timestamp = Date.now().toString().slice(-10); // Short timestamp
+        const sanitizedCourseTitle = sanitize(courseTitle || `course-${courseId}`, 35);
         const parentFolder = `${sanitizedCourseTitle}-${timestamp}`;
         const root = zip.folder(parentFolder);
 
@@ -143,7 +149,7 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
               if (i < chapterLectures.length - 1) md += '\n\n---\n\n';
             }
 
-            const filename = `${formatIndex(chapterIndex)}_${sanitize(chapterTitle)}_combined.md`;
+            const filename = `${formatIndex(chapterIndex)}_${sanitize(chapterTitle, 30)}_combined.md`;
             root?.file(filename, md);
             chapterIndex++;
           }
@@ -154,8 +160,8 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
           // Since we might receive them out of order, we simply use the chapter title as folder
 
           for (const l of lectures) {
-            const folderName = sanitize(l.chapterTitle);
-            const fileName = `${formatIndex(l.objectIndex)}-${sanitize(l.lectureTitle)}.md`;
+            const folderName = sanitize(l.chapterTitle, 30);
+            const fileName = `${formatIndex(l.objectIndex)}-${sanitize(l.lectureTitle, 40)}.md`;
 
             // Try to use index if we can infer it, otherwise simple folder
             const chapterFolder = root?.folder(folderName);
@@ -167,7 +173,7 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${sanitizedCourseTitle}-${timestamp}.zip`;
+        a.download = `${parentFolder}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -202,7 +208,8 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
               'Accept': 'text/event-stream',
               'Cache-Control': 'no-cache',
               'X-Udemy-Cookie': cookie || '',
-              'X-Custom-Prompt-Encoded': encodedPrompt
+              'X-Custom-Prompt-Encoded': encodedPrompt,
+              'X-Download-Content-Type': settings.downloadContentType
             },
             signal: abortController.signal
           }
@@ -316,7 +323,7 @@ export default function GenerateProgress({ courseId, courseTitle, lectureIds, on
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 animate-slide-up max-h-[70vh] overflow-y-auto">
+    <div className="fixed bottom-0 left-0 right-0 z-40 animate-slide-up max-h-[70vh] overflow-y-auto bg-gradient-to-t from-white/95 via-white/90 to-transparent dark:from-slate-900/95 dark:via-slate-900/90 dark:to-transparent pt-8">
       <div className="max-w-4xl mx-auto px-4 pb-4 space-y-3">
         {/* Current Session */}
         {currentSession && isGenerating && (

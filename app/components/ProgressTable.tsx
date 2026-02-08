@@ -11,7 +11,7 @@ interface ProgressTableProps {
     isActive?: boolean;
 }
 
-function StatusIcon({ status }: { status: 'pending' | 'fetching' | 'calling' | 'done' | 'error' | 'retrying' }) {
+function StatusIcon({ status }: { status: 'pending' | 'fetching' | 'calling' | 'done' | 'error' | 'retrying' | 'skipped' }) {
     switch (status) {
         case 'pending':
             return <span className="text-gray-400">⏳</span>;
@@ -22,6 +22,8 @@ function StatusIcon({ status }: { status: 'pending' | 'fetching' | 'calling' | '
             return <span className="animate-pulse text-yellow-500">🔁</span>;
         case 'done':
             return <span className="text-green-500">✅</span>;
+        case 'skipped':
+            return <span className="text-blue-500">⚡</span>;
         case 'error':
             return <span className="text-red-500">❌</span>;
         default:
@@ -53,8 +55,11 @@ function formatDate(timestamp: number): string {
 }
 
 export default function ProgressTable({ session, onToggle, onDelete, isActive = false }: ProgressTableProps) {
-    const completedCount = session.lectures.filter(l => l.llmStatus === 'done').length;
+    const completedCount = session.lectures.filter(l => l.llmStatus === 'done' || l.llmStatus === 'skipped').length;
     const errorCount = session.lectures.filter(l => l.llmStatus === 'error').length;
+
+    // Check if this is a captions-only session (all lectures have 'skipped' llmStatus)
+    const isCaptionsOnly = session.lectures.length > 0 && session.lectures.every(l => l.llmStatus === 'skipped' || l.llmStatus === 'pending');
 
     return (
         <div className={`glass-card rounded-xl overflow-hidden ${isActive ? 'ring-2 ring-indigo-500/30' : ''}`}>
@@ -125,8 +130,10 @@ export default function ProgressTable({ session, onToggle, onDelete, isActive = 
                                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-10">#</th>
                                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Chapter</th>
                                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Lecture</th>
-                                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">Caption</th>
-                                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">LLM</th>
+                                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">{isCaptionsOnly ? 'Status' : 'Caption'}</th>
+                                {!isCaptionsOnly && (
+                                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">LLM</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -152,14 +159,16 @@ export default function ProgressTable({ session, onToggle, onDelete, isActive = 
                                     <td className="px-4 py-3 text-center">
                                         <StatusIcon status={lecture.captionStatus} />
                                     </td>
-                                    <td className="px-4 py-3 text-center">
-                                        <div className="flex items-center justify-center gap-1">
-                                            <StatusIcon status={lecture.llmStatus} />
-                                            {lecture.llmProvider && lecture.llmStatus === 'done' && (
-                                                <span className="text-[10px] text-gray-400 uppercase">{lecture.llmProvider}</span>
-                                            )}
-                                        </div>
-                                    </td>
+                                    {!isCaptionsOnly && (
+                                        <td className="px-4 py-3 text-center">
+                                            <div className="flex items-center justify-center gap-1">
+                                                <StatusIcon status={lecture.llmStatus} />
+                                                {lecture.llmProvider && (lecture.llmStatus === 'done' || lecture.llmStatus === 'skipped') && (
+                                                    <span className="text-[10px] text-gray-400 uppercase">{lecture.llmStatus === 'skipped' ? 'raw' : lecture.llmProvider}</span>
+                                                )}
+                                            </div>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>

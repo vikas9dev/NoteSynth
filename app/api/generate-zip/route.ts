@@ -2,6 +2,7 @@ import archiver from 'archiver';
 import { PassThrough, Readable } from 'stream';
 import { Progress } from '../../types/progress';
 import { getCourseInfo } from '../../utils/udemy';
+import { createSafeFolderName, createSafeZipPath } from '../../utils/pathUtils';
 
 // Helper function to send progress updates
 async function sendProgress(writer: WritableStreamDefaultWriter, progress: Progress) {
@@ -38,10 +39,9 @@ async function processLectures(
     const courseTitle = courseInfo?.title || 'Udemy Course';
     console.log('Course title:', courseTitle);
 
-    // Create timestamp and sanitize course title for folder names
-    const timestamp = Date.now().toString();
-    const sanitizedCourseTitle = courseTitle.replace(/[^a-z0-9-\s]/gi, '').replace(/\s+/g, '-').toLowerCase().trim();
-    const parentFolderName = `${sanitizedCourseTitle}-${timestamp}`;
+    // Create safe folder name with length limits
+    const timestamp = Date.now();
+    const parentFolderName = createSafeFolderName(courseTitle, timestamp, 35);
 
     // Create ZIP stream
     const passThrough = new PassThrough();
@@ -89,11 +89,8 @@ async function processLectures(
             lecture: result.lecture
           });
           
-          // Add file to ZIP with proper structure
-          const fileName = `${parentFolderName}/${result.chapter}/${result.lecture}.md`
-            .replace(/[^a-z0-9-/\s]/gi, '')
-            .replace(/\s+/g, '-')
-            .toLowerCase();
+          // Add file to ZIP with proper structure (ensuring path length limits)
+          const fileName = createSafeZipPath(parentFolderName, result.chapter, result.lecture);
           
           archive.append(result.content, { name: fileName });
         }

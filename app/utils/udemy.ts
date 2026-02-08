@@ -78,7 +78,8 @@ export async function getLectureInfo(
   lectureId: string,
   cookie: string,
   preFetchedCourseInfo?: CourseInfo,
-  customPrompt?: string
+  customPrompt?: string,
+  skipAI?: boolean
 ): Promise<LectureInfo | null> {
   try {
     // Use pre-fetched course info if available, otherwise fetch it
@@ -142,12 +143,22 @@ export async function getLectureInfo(
         }
         const vttContent = await captionResponse.text();
 
-        // Convert VTT content to markdown and generate structured notes
+        // Convert VTT content to markdown
         const markdownContent = convertVttToMarkdown(vttContent);
-        const result = await generateStructuredNotes(markdownContent, lectureInfo.title, customPrompt);
-        content = result.content;
-        llmSuccess = result.llmSuccess;
-        llmProvider = result.provider;
+
+        if (skipAI) {
+          // Skip AI processing - return raw captions with heading
+          content = `## ${lectureInfo.title}\n\n${markdownContent}`;
+          llmSuccess = true;
+          llmProvider = 'none';
+          console.log(`Skipping AI for lecture ${lectureId} - returning raw captions`);
+        } else {
+          // Generate structured notes using AI
+          const result = await generateStructuredNotes(markdownContent, lectureInfo.title, customPrompt);
+          content = result.content;
+          llmSuccess = result.llmSuccess;
+          llmProvider = result.provider;
+        }
       } else {
         console.log('No valid English captions found:', data.asset.captions);
       }

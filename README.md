@@ -110,11 +110,33 @@ NoteSynth is built to handle the aggressive rate limits of free-tier AI provider
 - 📊 **Real-Time Progress**: Watch lecture-by-lecture progress with live status updates for captions and LLM processing.
 - 📜 **Generation History**: Track all your past sessions in the dedicated History page with download filenames.
 - ⚙️ **Complete Customization**: Edit AI prompts and choose between **Chapter-based** or **Section-based** output formats.
+- ⚡ **Captions Only Mode**: Download raw captions without AI processing for faster downloads.
 - 🔄 **Resilient Processing**: Built-in exponential backoff and provider fallback system.
 - 📚 **Organized Output**: ZIP files structured by chapters and lecture indices.
 - 🎨 **Smart Markdown**: Detects **Tips**, **Warnings**, and **Examples** with emojis and bolding.
 - 📦 **One-Click Export**: Batch download entire chapters as a single ZIP.
 - 💾 **Local Cache**: Securely stores your cookie, course list, and history in browser storage.
+
+---
+
+## ⚡ Captions Only Mode
+
+NoteSynth offers a **Captions Only** download option for users who prefer to process notes using their own AI tools:
+
+1. Go to **Settings** → **Download Content** tab
+2. Select **"Captions Only"**
+3. Generate notes as usual - downloads will be significantly faster
+
+### Why Use Captions Only?
+
+- **Faster Downloads**: Skips all AI API calls, making downloads nearly instant
+- **No API Credits Used**: Perfect when you've hit rate limits or want to save API quota
+- **Use Your Preferred AI**: Process the raw captions with AI-powered IDEs like:
+  - **[Cursor](https://cursor.sh/)** - AI-first code editor
+  - **[Antigravity](https://www.antigravity.ai/)** - AI coding assistant
+  - **ChatGPT**, **Claude**, or any other AI tool of your choice
+
+> 💡 **Pro Tip**: Download captions in bulk, then use your IDE's AI features to generate customized notes with your own prompts!
 
 ---
 
