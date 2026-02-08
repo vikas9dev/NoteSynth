@@ -4,6 +4,7 @@
 export interface NoteSynthSettings {
     customPrompt: string;
     outputFormat: 'file-per-chapter' | 'file-per-section';
+    downloadContentType: 'ai-notes' | 'captions-only';
 }
 
 // Default prompt template
@@ -34,6 +35,7 @@ Here is the lecture transcript:
 export const DEFAULT_SETTINGS: NoteSynthSettings = {
     customPrompt: DEFAULT_PROMPT,
     outputFormat: 'file-per-chapter',
+    downloadContentType: 'ai-notes',
 };
 
 const SETTINGS_KEY = 'notesynth_settings';
@@ -95,6 +97,9 @@ export function getSettings(): NoteSynthSettings {
             outputFormat: parsed.outputFormat === 'file-per-section'
                 ? 'file-per-section'
                 : 'file-per-chapter',
+            downloadContentType: parsed.downloadContentType === 'captions-only'
+                ? 'captions-only'
+                : 'ai-notes',
         };
     } catch {
         console.error('Failed to parse settings from localStorage');
@@ -120,6 +125,7 @@ export function saveSettings(settings: NoteSynthSettings): { success: boolean; e
         const toSave: NoteSynthSettings = {
             customPrompt: settings.customPrompt, // Store original for editing
             outputFormat: settings.outputFormat,
+            downloadContentType: settings.downloadContentType,
         };
 
         localStorage.setItem(SETTINGS_KEY, JSON.stringify(toSave));

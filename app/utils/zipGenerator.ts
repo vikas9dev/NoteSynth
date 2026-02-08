@@ -1,5 +1,6 @@
 import JSZip from 'jszip';
 import { getCourseInfo, getLectureInfo } from './udemy';
+import { createSafeFolderName } from './pathUtils';
 
 export async function generateZipFile(
   courseId: string,
@@ -8,9 +9,8 @@ export async function generateZipFile(
   cookie: string
 ): Promise<Blob> {
   const zip = new JSZip();
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const sanitizedCourseTitle = courseTitle.replace(/[^a-zA-Z0-9]/g, '-');
-  const parentFolder = `${sanitizedCourseTitle}-${timestamp}`;
+  const timestamp = Date.now().toString().slice(-10); // Short timestamp
+  const parentFolder = createSafeFolderName(courseTitle, timestamp, 35);
 
   try {
     // Get course structure first
@@ -53,7 +53,8 @@ export async function generateZipFile(
 
     // Create folders and files in the ZIP
     for (const chapter of sortedChapters) {
-      const chapterFolder = zip.folder(`${parentFolder}/${formatIndex(chapter.objectIndex)}-${sanitizeFileName(chapter.title)}`);
+      const chapterPath = `${parentFolder}/${formatIndex(chapter.objectIndex)}-${sanitizeFileName(chapter.title, 30)}`;
+      const chapterFolder = zip.folder(chapterPath);
       if (!chapterFolder) continue;
 
       // Get lectures for this chapter and sort them
@@ -61,10 +62,8 @@ export async function generateZipFile(
       lectures.sort((a, b) => a.objectIndex - b.objectIndex);
 
       for (const lecture of lectures) {
-        chapterFolder.file(
-          `${formatIndex(lecture.objectIndex)}-${sanitizeFileName(lecture.title)}.md`,
-          lecture.content
-        );
+        const fileName = `${formatIndex(lecture.objectIndex)}-${sanitizeFileName(lecture.title, 40)}.md`;
+        chapterFolder.file(fileName, lecture.content);
       }
     }
 
@@ -75,11 +74,23 @@ export async function generateZipFile(
   }
 }
 
-function sanitizeFileName(name: string): string {
-  return name
+function sanitizeFileName(name: string, maxLength: number = 30): string {
+  let sanitized = name
     .replace(/[<>:"/\\|?*]/g, '') // Remove invalid characters
     .replace(/\s+/g, ' ') // Replace multiple spaces with single space
     .trim();
+
+  // Truncate to prevent Windows path length issues (260 char limit)
+  if (sanitized.length > maxLength) {
+    sanitized = sanitized.substring(0, maxLength).trim();
+    // Remove trailing incomplete words if possible
+    const lastSpace = sanitized.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.7) {
+      sanitized = sanitized.substring(0, lastSpace);
+    }
+  }
+
+  return sanitized;
 }
 
 function formatIndex(index: number): string {

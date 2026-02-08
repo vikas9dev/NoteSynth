@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeftIcon, ClockIcon, CalendarIcon, AdjustmentsHorizontalIcon, CommandLineIcon, DocumentDuplicateIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ClockIcon, CalendarIcon, AdjustmentsHorizontalIcon, CommandLineIcon, DocumentDuplicateIcon, ShieldCheckIcon, BoltIcon } from '@heroicons/react/24/outline';
 
 export default function NewFeaturesCustomization() {
     return (
@@ -71,6 +71,37 @@ export default function NewFeaturesCustomization() {
 
 {{TRANSCRIPT}}`}
                             </pre>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Feature 2: Captions Only Mode */}
+                <section className="mb-12">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                            <BoltIcon className="h-5 w-5 text-white" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Captions Only Mode</h2>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-6 border-l-4 border-amber-500">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">⚡ Lightning Fast Downloads</h3>
+                        <p className="text-gray-600 dark:text-gray-300 mb-4">
+                            Need notes instantly? The new <strong>Captions Only</strong> mode skips the AI processing entirely.
+                        </p>
+                        <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            <li className="flex items-center gap-2">
+                                <span className="text-green-500">✓</span> Instant downloads (no waiting for AI)
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <span className="text-green-500">✓</span> Saves your AI API quota
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <span className="text-green-500">✓</span> Perfect for use with <strong>Cursor</strong>, <strong>Antigravity</strong>, or <strong>ChatGPT</strong>
+                            </li>
+                        </ul>
+                        <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 text-sm rounded-lg">
+                            <strong>Pro Tip:</strong> Download raw captions and use them as context in your favorite AI IDE/Assistant to generate personalized study guides!
                         </div>
                     </div>
                 </section>

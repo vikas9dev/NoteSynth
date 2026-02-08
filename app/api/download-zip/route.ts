@@ -1,6 +1,7 @@
 import archiver from 'archiver';
 import { Readable, PassThrough } from 'stream';
 import { getNotes, generateStorageKey } from '../../utils/tempStorage';
+import { createSafeFolderName, createSafeZipPath } from '../../utils/pathUtils';
 
 export async function GET(request: Request) {
   console.log('Download endpoint called');
@@ -29,8 +30,7 @@ export async function GET(request: Request) {
     }
 
     const { courseTitle, notes } = notesData;
-    const sanitizedCourseTitle = sanitizeFileName(courseTitle);
-    const parentFolderName = `${sanitizedCourseTitle}-${timestamp}`;
+    const parentFolderName = createSafeFolderName(courseTitle, timestamp);
     
     console.log('Creating ZIP archive for course:', courseTitle);
     console.log('Parent folder name:', parentFolderName);
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
     
     // Add files organized by chapter
     notes.forEach((note) => {
-      const fileName = `${parentFolderName}/${sanitizeFileName(note.chapter)}/${sanitizeFileName(note.lecture)}.md`;
+      const fileName = createSafeZipPath(parentFolderName, note.chapter, note.lecture);
       console.log('Adding file:', fileName);
       archive.append(note.content, { name: fileName });
     });
@@ -95,11 +95,3 @@ export async function GET(request: Request) {
     return new Response('Failed to generate ZIP file', { status: 500 });
   }
 }
-
-function sanitizeFileName(name: string): string {
-  return name
-    .replace(/[^a-z0-9-\s]/gi, '') // Remove special characters
-    .replace(/\s+/g, '-')          // Replace spaces with hyphens
-    .toLowerCase()
-    .trim();
-} 

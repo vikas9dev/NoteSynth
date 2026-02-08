@@ -44,18 +44,20 @@ export default function BlogPage() {
         <div className="min-h-screen py-12 px-4">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm font-medium mb-4">
-                        <BookOpenIcon className="h-4 w-4" />
-                        Blog
+                <header className="mb-12">
+                    <div className="text-center mb-4">
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm font-medium">
+                            <BookOpenIcon className="h-4 w-4" />
+                            Blog
+                        </span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                        Learn More About <span className="gradient-text">NoteSynth</span>
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 text-center px-4">
+                        Learn More About <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">NoteSynth</span>
                     </h1>
-                    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    <p>
                         Tips, guides, and insights on how to get the most out of your Udemy courses with AI-powered note generation.
                     </p>
-                </div>
+                </header>
 
                 {/* Blog Grid */}
                 <div className="space-y-6">
@@ -63,8 +65,9 @@ export default function BlogPage() {
                         <Link
                             key={blog.slug}
                             href={`/blog/${blog.slug}`}
-                            className={`block glass-card rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group ${blog.featured ? 'border-2 border-indigo-500/30' : ''
-                                }`}
+                            className={`block glass-card rounded-2xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group ${
+                                blog.featured ? 'border-2 border-indigo-500/30' : ''
+                            }`}
                             style={{ animationDelay: `${index * 0.1}s` }}
                         >
                             {blog.featured && (
@@ -82,7 +85,7 @@ export default function BlogPage() {
                             </p>
 
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-500">
+                                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                                     <span>{blog.date}</span>
                                     <span className="flex items-center gap-1">
                                         <ClockIcon className="h-4 w-4" />
